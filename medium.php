@@ -1,0 +1,30 @@
+<?php
+/**
+ * @package Medium
+ * @version 1.0
+ */
+/*
+Plugin Name: Medium
+Description: Publish posts automatically from your blog to a Medium profile.
+Version: 1.0
+Author: A Medium Corporation
+Author URI: https://medium.com
+License: Apache
+Text Domain: medium
+*/
+
+// Disallow direct access
+if (!function_exists("add_action")) {
+  echo "Don't call me, I'll call you.";
+  exit;
+}
+
+define("MEDIUM_VERSION", "1.0");
+define("MEDIUM_PLUGIN_DIR", plugin_dir_path(__FILE__));
+define("MEDIUM_PLUGIN_URL", plugin_dir_url(__FILE__));
+define("MEDIUM_TEXTDOMAIN", "medium");
+
+if (is_admin()) {
+  require_once(MEDIUM_PLUGIN_DIR . "lib/medium-admin.php");
+  add_action("init", array("Medium_Admin", "init"));
+}

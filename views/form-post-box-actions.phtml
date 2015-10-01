@@ -1,0 +1,53 @@
+<div class="misc-pub-section misc-pub-medium-status">
+	<div class="post-medium-images">
+		<a href="https://medium.com"><img class="post-medium-image post-medium-image-logo" src="<?= $data->medium_logo_url ?>"/></a>
+		<a href="<?= $data->medium_user->url ?>"><img class="post-medium-image post-medium-image-avatar" src="<?= $data->medium_user->image_url ?>"/></a>
+	</div>
+	<span id="medium-status">Crosspost as: <b><span id="post-medium-status-display"><?= $data->medium_post_statuses[$data->medium_post->status] ?></span></b>
+		<a href="#edit_medium_status" class="edit-medium-status hide-if-no-js">
+			<span aria-hidden="true">Edit</span>
+			<span class="screen-reader-text">Edit Crosspost option</span>
+		</a>
+	</span>
+
+	<div id="post-medium-status-select" class="hide-if-js">
+		<input type="hidden" id="medium-status-hidden" value="<?= $data->medium_post->status ?>" />
+		<?php
+		foreach ($data->medium_post_statuses as $status => $label) {
+			?>
+			<input type="radio" name="medium-status" id="medium-status-radio-<?= $status ?>" value="<?= $status ?>" <?php checked($data->medium_post->status, $status) ?> />
+			<label for="medium-status-radio-<?= $status ?>" class="selectit"><?= $label ?></label><br />
+			<?php
+		}
+		?>
+		<p>
+		 <a href="#medium-status" class="save-post-medium-status hide-if-no-js button"><?= __('OK'); ?></a>
+		 <a href="#medium-status" class="cancel-post-medium-status hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		</p>
+	</div>
+</div>
+
+<div class="misc-pub-section misc-pub-medium-license <?= $data->license_visibility_class ?>">
+	<span id="medium-license">License: <b><span id="post-medium-license-display"><?= $data->medium_post_licenses[$data->medium_post->license] ?></span></b>
+		<a href="#edit_medium_license" class="edit-medium-license hide-if-no-js">
+			<span aria-hidden="true">Edit</span>
+			<span class="screen-reader-text">Edit Medium license</span>
+		</a>
+	</span>
+
+	<div id="post-medium-license-select" class="hide-if-js">
+		<input type="hidden" id="medium-license-hidden" value="<?= $data->medium_post->license ?>" />
+		<?php
+		foreach ($data->medium_post_licenses as $license => $label) {
+			?>
+			<input type="radio" name="medium-license" id="medium-license-radio-<?= $license ?>" value="<?= $license ?>" <?php checked($data->medium_post->license, $license) ?> />
+			<label for="medium-license-radio-<?= $license ?>" class="selectit"><?= $label ?></label><br />
+			<?php
+		}
+		?>
+		<p>
+		 <a href="#medium-license" class="save-post-medium-license hide-if-no-js button"><?= __('OK'); ?></a>
+		 <a href="#medium-license" class="cancel-post-medium-license hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		</p>
+	</div>
+</div>

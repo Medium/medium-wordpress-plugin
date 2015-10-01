@@ -1,0 +1,44 @@
+<h3 id="medium">Medium</h3>
+<table class="form-table">
+	<tr>
+		<th><label for="medium_integration_token">Integration Token</label></th>
+		<td>
+			<input type="text" name="medium_integration_token" id="medium_integration_token" value="<?= $data->medium_user->token ?>" class="regular-text" /><br />
+			<?php
+			if ($data->medium_user->token) {
+				?><p class="description">Connected to Medium as <a href="<?= $data->medium_user->url ?>"><?= $data->medium_user->name ?></a>.</p><?php
+			} else {
+				?><p class="description">You can get this from the Integration Tokens section of your <a href="https://medium.com/me/settings#integration-tokens">Medium Settings</a>.</p><?php
+			}
+			?>
+		</td>
+	</tr>
+	<tr>
+		<th><label for="medium_default_post_status">Default crosspost status</label></th>
+		<td>
+			<select name="medium_default_post_status" id="medium_default_post_status">
+				<?php
+				foreach ($data->medium_post_statuses as $status => $label) {
+					?>
+					<option value="<?= $status ?>" <?php selected($data->medium_user->default_status, $status) ?>><?= $label ?></option>
+					<?php
+				}
+				?>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th><label for="medium_default_post_status">Default crosspost license</label></th>
+		<td>
+			<select name="medium_default_post_license" id="medium_default_post_license">
+				<?php
+				foreach ($data->medium_post_licenses as $license => $label) {
+					?>
+					<option value="<?= $license ?>" <?php selected($data->medium_user->default_license, $license) ?>><?= $label ?></option>
+					<?php
+				}
+				?>
+			</select>
+		</td>
+	</tr>
+</table>
