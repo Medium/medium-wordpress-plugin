@@ -234,7 +234,7 @@ class Medium_Admin {
 
     $content = self::_render("content-rendered-post", array(
       "title" => $post->post_title,
-      "content" => wpautop($post->post_content),
+      "content" => self::_prepare_content($post),
       "cross_link" => true,
       "site_name" => get_bloginfo('name'),
       "permalink" => get_permalink($post->ID)
@@ -415,6 +415,32 @@ class Medium_Admin {
         break;
     }
     self::_add_notice($type, $args);
+  }
+
+  // Formatting
+
+  /**
+   * Given a post, returns content suitable for sending to Medium.
+   */
+  private static function _prepare_content($post) {
+    // Add paragraph tags.
+    $post_content = wpautop($post->post_content);
+
+    // Best effort. Regex parsing of HTML is a bad idea, generally, but including
+    // a full parser just for this case is over the top. This will match things
+    // inside, for example, <pre> and <xmp> tags. ¯\_(ツ)_/¯
+    preg_match_all('/<(?:a|img)[^>]+(?:href|src)="(?:\/[^"]*)"/', $post_content, $matches);
+    if (!$matches[0]) return $post_content;
+
+    // Replace relative URLs in links and image sources.
+    $site_url = site_url();
+    $replacements = array();
+    foreach ($matches[0] as $match) {
+      $replacement = preg_replace('/href="(\/[^"]*)"/', 'href="' . $site_url . '$1"', $match);
+      $replacement = preg_replace('/src="(\/[^"]*)"/', 'src="' . $site_url . '$1"', $replacement);
+      $replacements[] = $replacement;
+    }
+    return str_replace($matches[0], $replacements, $post_content);
   }
 
   /**
