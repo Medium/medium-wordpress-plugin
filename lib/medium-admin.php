@@ -115,43 +115,8 @@ class Medium_Admin {
    * Renders the cross-posting options in the edit post sidebar.
    */
   public static function add_meta_boxes_post($post) {
-    add_meta_box("medium", "Medium", function ($post, $args) {
-      global $current_user;
-
-      $medium_logo_url = MEDIUM_PLUGIN_URL . 'i/logo.png';
-      $medium_post = self::_get_medium_connected_post($post->ID);
-      $medium_user = self::_get_medium_connected_user($current_user->ID);
-      if ($medium_post->id) {
-        // Already connected.
-        self::_render("form-post-box-linked", array(
-          "medium_post" => $medium_post,
-          "medium_user" => $medium_user,
-          "medium_logo_url" => $medium_logo_url
-        ));
-      } else if ($medium_user->token && $medium_user->id) {
-        // Can be connected.
-        if (!$medium_post->license) {
-          $medium_post->license = $medium_user->default_license;
-        }
-        if (!$medium_post->status) {
-          $medium_post->status = $medium_user->default_status;
-        }
-        $license_visibility_class = $medium_post->status == "none" ? "hidden" : "";
-        self::_render("form-post-box-actions", array(
-          "medium_post" => $medium_post,
-          "medium_user" => $medium_user,
-          "medium_logo_url" => $medium_logo_url,
-          "medium_post_statuses" => self::_get_post_statuses(),
-          "medium_post_licenses" => self::_get_post_licenses(),
-          "license_visibility_class" => $license_visibility_class
-        ));
-      } else {
-        // Needs token.
-        self::_render("form-post-box-actions-disabled", array(
-          "edit_profile_url" => get_edit_user_link($current_user->ID) . '#medium'
-        ));
-      }
-    }, null, "side", "high");
+    add_meta_box("medium", "Medium", array("Medium_Admin", "meta_box_callback"),
+        null, "side", "high");
   }
 
   /**
@@ -208,6 +173,49 @@ class Medium_Admin {
       "medium_post_statuses" => self::_get_post_statuses()
     ));
     return;
+  }
+
+  // Utilities
+
+  /**
+   * Callback that renders the Crosspost meta box.
+   */
+  public static function meta_box_callback($post, $args) {
+    global $current_user;
+
+    $medium_logo_url = MEDIUM_PLUGIN_URL . 'i/logo.png';
+    $medium_post = self::_get_medium_connected_post($post->ID);
+    $medium_user = self::_get_medium_connected_user($current_user->ID);
+    if ($medium_post->id) {
+      // Already connected.
+      self::_render("form-post-box-linked", array(
+        "medium_post" => $medium_post,
+        "medium_user" => $medium_user,
+        "medium_logo_url" => $medium_logo_url
+      ));
+    } else if ($medium_user->token && $medium_user->id) {
+      // Can be connected.
+      if (!$medium_post->license) {
+        $medium_post->license = $medium_user->default_license;
+      }
+      if (!$medium_post->status) {
+        $medium_post->status = $medium_user->default_status;
+      }
+      $license_visibility_class = $medium_post->status == "none" ? "hidden" : "";
+      self::_render("form-post-box-actions", array(
+        "medium_post" => $medium_post,
+        "medium_user" => $medium_user,
+        "medium_logo_url" => $medium_logo_url,
+        "medium_post_statuses" => self::_get_post_statuses(),
+        "medium_post_licenses" => self::_get_post_licenses(),
+        "license_visibility_class" => $license_visibility_class
+      ));
+    } else {
+      // Needs token.
+      self::_render("form-post-box-actions-disabled", array(
+        "edit_profile_url" => get_edit_user_link($current_user->ID) . '#medium'
+      ));
+    }
   }
 
   // API calls.
