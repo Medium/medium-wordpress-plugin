@@ -1,0 +1,20 @@
+.post-medium-images {
+  margin: 0 auto 10px;
+  width: 175px;
+}
+.post-medium-image {
+  width: 80px;
+  width: 80px;
+}
+.post-medium-image.post-medium-image-logo {
+  margin-right: 10px;
+}
+.post-medium-image.post-medium-image-avatar {
+  border-radius: 100%;
+}
+#medium-post-link {
+  text-align: center;
+}
+#medium-post-link p {
+  margin-bottom: 0;
+}
