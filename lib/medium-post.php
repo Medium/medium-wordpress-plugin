@@ -6,6 +6,8 @@
  * Representation of a Medium post.
  */
 class Medium_Post {
+  public $author_image_url;
+  public $author_url;
   public $cross_link;
   public $id;
   public $license;
