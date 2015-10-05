@@ -173,6 +173,8 @@ class Medium_Admin {
 
     $medium_post->id = $created_medium_post->id;
     $medium_post->url = $created_medium_post->url;
+    $medium_post->author_image_url = $medium_user->image_url;
+    $medium_post->author_url = $medium_user->url;
     $medium_post->save($post_id);
 
     self::_add_notice("published", array(
@@ -192,12 +194,15 @@ class Medium_Admin {
 
     $medium_logo_url = MEDIUM_PLUGIN_URL . 'i/logo.png';
     $medium_post = Medium_Post::get_by_wp_id($post->ID);
-    $medium_user = Medium_User::get_by_wp_id($current_user->ID);
+    $medium_user = Medium_User::get_by_wp_id($post->post_author);
     if ($medium_post->id) {
       // Already connected.
+      if ($medium_user->id) {
+        $medium_post->author_url = $medium_user->url;
+        $medium_post->author_image_url = $medium_user->image_url;
+      }
       Medium_View::render("form-post-box-linked", array(
         "medium_post" => $medium_post,
-        "medium_user" => $medium_user,
         "medium_logo_url" => $medium_logo_url
       ));
     } else if ($medium_user->token && $medium_user->id) {
