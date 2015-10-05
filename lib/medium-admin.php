@@ -2,6 +2,10 @@
 // Copyright 2015 Medium
 // Licensed under the Apache License, Version 2.0.
 
+require_once(MEDIUM_PLUGIN_DIR . "lib/medium-post.php");
+require_once(MEDIUM_PLUGIN_DIR . "lib/medium-user.php");
+require_once(MEDIUM_PLUGIN_DIR . "lib/medium-view.php");
+
 class Medium_Admin {
 
   private static $_initialised = false;
@@ -47,7 +51,7 @@ class Medium_Admin {
   public static function admin_notices() {
     if (!$_SESSION["medium_notices"]) return;
     foreach ($_SESSION["medium_notices"] as $name => $args) {
-      self::_render("notice-$name", $args);
+      Medium_View::render("notice-$name", $args);
     }
     $_SESSION["medium_notices"] = array();
   }
@@ -61,7 +65,7 @@ class Medium_Admin {
     $status = $_POST["medium_default_post_status"];
     $license = $_POST["medium_default_post_license"];
 
-    $medium_user = self::_get_medium_connected_user($user_id);
+    $medium_user = Medium_User::get_by_wp_id($user_id);
 
     if ($medium_user->default_status != $status) {
       $medium_user->default_status = $status;
@@ -94,7 +98,7 @@ class Medium_Admin {
         self::_add_api_error_notice($e, $token);
       }
     }
-    self::_save_medium_connected_user($user_id, $medium_user);
+    $medium_user->save($user_id);
 
     return true;
   }
@@ -103,8 +107,8 @@ class Medium_Admin {
    * Adds Medium integration settings to the user profile.
    */
   public static function show_user_profile($user) {
-    $medium_user = self::_get_medium_connected_user($user->ID);
-    self::_render("form-user-profile", array(
+    $medium_user = Medium_User::get_by_wp_id($user->ID);
+    Medium_View::render("form-user-profile", array(
       "medium_post_statuses" => self::_get_post_statuses(),
       "medium_post_licenses" => self::_get_post_licenses(),
       "medium_user" => $medium_user
@@ -126,7 +130,7 @@ class Medium_Admin {
   public static function save_post($post_id, $post) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
 
-    $medium_post = self::_get_medium_connected_post($post_id);
+    $medium_post = Medium_Post::get_by_wp_id($post_id);
 
     // If this post has already been sent to Medium, no need to do anything.
     if ($medium_post->id) return;
@@ -137,6 +141,9 @@ class Medium_Admin {
     if (isset($_REQUEST["medium-license"])) {
       $medium_post->license = $_REQUEST["medium-license"];
     }
+    if (isset($_REQUEST["medium-cross-link"])) {
+      $medium_post->cross_link = $_REQUEST["medium-cross-link"];
+    }
 
     // If the post isn't published, no need to do anything else.
     $published = $post->post_status == "publish";
@@ -145,12 +152,12 @@ class Medium_Admin {
     $skipCrossposting = $medium_post->status == "none";
 
     // If the user isn't connected, no need to do anything.
-    $medium_user = self::_get_medium_connected_user($post->post_author);
+    $medium_user = Medium_User::get_by_wp_id($post->post_author);
     $connected = $medium_user->id && $medium_user->token;
 
     if (!$published || $skipCrossposting || !$connected) {
       // Save the updated license and status.
-      self::_save_medium_connected_post($post_id, $medium_post);
+      $medium_post->save($post_id);
       return;
     }
 
@@ -158,7 +165,7 @@ class Medium_Admin {
     // connected, we haven't sent it to Medium previously, and we want to send it.
 
     try {
-      $created_medium_post = self::create_medium_post($post, $medium_post->status, $medium_post->license, $medium_user);
+      $created_medium_post = self::crosspost($post, $medium_post, $medium_user);
     } catch (Exception $e) {
       self::_add_api_error_notice($e, $medium_user->token);
       return;
@@ -166,7 +173,7 @@ class Medium_Admin {
 
     $medium_post->id = $created_medium_post->id;
     $medium_post->url = $created_medium_post->url;
-    self::_save_medium_connected_post($post_id, $medium_post);
+    $medium_post->save($post_id);
 
     self::_add_notice("published", array(
       "medium_post" => $medium_post,
@@ -184,11 +191,11 @@ class Medium_Admin {
     global $current_user;
 
     $medium_logo_url = MEDIUM_PLUGIN_URL . 'i/logo.png';
-    $medium_post = self::_get_medium_connected_post($post->ID);
-    $medium_user = self::_get_medium_connected_user($current_user->ID);
+    $medium_post = Medium_Post::get_by_wp_id($post->ID);
+    $medium_user = Medium_User::get_by_wp_id($current_user->ID);
     if ($medium_post->id) {
       // Already connected.
-      self::_render("form-post-box-linked", array(
+      Medium_View::render("form-post-box-linked", array(
         "medium_post" => $medium_post,
         "medium_user" => $medium_user,
         "medium_logo_url" => $medium_logo_url
@@ -201,18 +208,22 @@ class Medium_Admin {
       if (!$medium_post->status) {
         $medium_post->status = $medium_user->default_status;
       }
-      $license_visibility_class = $medium_post->status == "none" ? "hidden" : "";
-      self::_render("form-post-box-actions", array(
+      if (!$medium_post->cross_link) {
+        $medium_post->cross_link = "yes";
+      }
+      $options_visibility_class = $medium_post->status == "none" ? "hidden" : "";
+      Medium_View::render("form-post-box-actions", array(
         "medium_post" => $medium_post,
         "medium_user" => $medium_user,
         "medium_logo_url" => $medium_logo_url,
         "medium_post_statuses" => self::_get_post_statuses(),
         "medium_post_licenses" => self::_get_post_licenses(),
-        "license_visibility_class" => $license_visibility_class
+        "medium_post_cross_link_options" => self::_get_post_cross_link_options(),
+        "options_visibility_class" => $options_visibility_class
       ));
     } else {
       // Needs token.
-      self::_render("form-post-box-actions-disabled", array(
+      Medium_View::render("form-post-box-actions-disabled", array(
         "edit_profile_url" => get_edit_user_link($current_user->ID) . '#medium'
       ));
     }
@@ -223,7 +234,7 @@ class Medium_Admin {
   /**
    * Creates a post on Medium.
    */
-  public static function create_medium_post($post, $status, $license, $medium_user) {
+  public static function crosspost($post, $medium_post, $medium_user) {
     $tag_data = wp_get_post_tags($post->ID);
     $tags = array();
     foreach ($tag_data as $tag) {
@@ -232,10 +243,10 @@ class Medium_Admin {
       }
     }
 
-    $content = self::_render("content-rendered-post", array(
+    $content = Medium_View::render("content-rendered-post", array(
       "title" => $post->post_title,
       "content" => self::_prepare_content($post),
-      "cross_link" => true,
+      "cross_link" => $medium_post->cross_link == "yes",
       "site_name" => get_bloginfo('name'),
       "permalink" => get_permalink($post->ID)
     ), true);
@@ -246,8 +257,8 @@ class Medium_Admin {
       "tags" => $tags,
       "contentFormat" => "html",
       "canonicalUrl" => $permalink,
-      "license" => $license,
-      "publishStatus" => $status
+      "license" => $medium_post->license,
+      "publishStatus" => $medium_post->status
     );
     $data = json_encode($body);
 
@@ -339,55 +350,13 @@ class Medium_Admin {
   }
 
   /**
-   * Save the Medium post associated with the supplied post Id.
+   * Returns an array of the valid post statuses.
    */
-  private static function _save_medium_connected_post($post_id, Medium_Post $medium_post) {
-    update_post_meta($post_id, "medium_post_id", $medium_post->id);
-    update_post_meta($post_id, "medium_post_license", $medium_post->license);
-    update_post_meta($post_id, "medium_post_status", $medium_post->status);
-    update_post_meta($post_id, "medium_post_url", $medium_post->url);
-  }
-
-  /**
-   * Gets the Medium post associated with the supplied post Id.
-   */
-  private static function _get_medium_connected_post($post_id) {
-    if (!$post_id) return new Medium_Post();
-
-    $id = get_post_meta($post_id, "medium_post_id", true);
-    $license = get_post_meta($post_id, "medium_post_license", true);
-    $status = get_post_meta($post_id, "medium_post_status", true);
-    $url = get_post_meta($post_id, "medium_post_url", true);
-    return new Medium_Post($id, $license, $status, $url);
-  }
-
-  /**
-   * Saves the Medium user associated with the supplied user Id.
-   */
-  private static function _save_medium_connected_user($user_id, Medium_User $medium_user) {
-    update_usermeta($user_id, "medium_user_default_license", $medium_user->default_license);
-    update_usermeta($user_id, "medium_user_default_status", $medium_user->default_status);
-    update_usermeta($user_id, "medium_user_id", $medium_user->id);
-    update_usermeta($user_id, "medium_user_image_url", $medium_user->image_url);
-    update_usermeta($user_id, "medium_user_name", $medium_user->name);
-    update_usermeta($user_id, "medium_integration_token", $medium_user->token);
-    update_usermeta($user_id, "medium_user_url", $medium_user->url);
-  }
-
-  /**
-   * Gets the Medium user associated with the supplied user Id.
-   */
-  private static function _get_medium_connected_user($user_id) {
-    if (!$user_id) return new Medium_User();
-
-    $default_license = get_the_author_meta("medium_user_default_license", $user_id);
-    $default_status = get_the_author_meta("medium_user_default_status", $user_id);
-    $id = get_the_author_meta("medium_user_id", $user_id);
-    $image_url = get_the_author_meta("medium_user_image_url", $user_id);
-    $name = get_the_author_meta("medium_user_name", $user_id);
-    $token = get_the_author_meta("medium_integration_token", $user_id);
-    $url = get_the_author_meta("medium_user_url", $user_id);
-    return new Medium_User($default_license, $default_status, $id, $image_url, $name, $token, $url);
+  private static function _get_post_cross_link_options() {
+    return array(
+      "yes" => __("Yes", MEDIUM_TEXTDOMAIN),
+      "no" => __("No", MEDIUM_TEXTDOMAIN)
+    );
   }
 
   // Feedback.
@@ -451,61 +420,5 @@ class Medium_Admin {
       $_SESSION["medium_notices"] = array();
     }
     $_SESSION["medium_notices"][$name] = $args;
-  }
-
-  // Rendering.
-
-  /**
-   * Renders a template.
-   */
-  private static function _render($name, array $args = array(), $return = false) {
-    $data = new stdClass();
-    foreach ($args as $key => $val) {
-      $data->$key = $val;
-    }
-    ob_start();
-    include(MEDIUM_PLUGIN_DIR . 'views/'. $name . '.phtml');
-    if ($return) return ob_get_clean();
-    ob_end_flush();
-  }
-}
-
-/**
- * Representation of a Medium post.
- */
-class Medium_Post {
-  public $id;
-  public $license;
-  public $status;
-  public $url;
-
-  public function __construct($id, $license, $status, $url) {
-    $this->id = $id;
-    $this->license = $license;
-    $this->status = $status;
-    $this->url = $url;
-  }
-}
-
-/**
- * Representation of a Medium user.
- */
-class Medium_User {
-  public $default_license;
-  public $default_status;
-  public $id;
-  public $image_url;
-  public $name;
-  public $token;
-  public $url;
-
-  public function __construct($default_license, $default_status, $id, $image_url, $name, $token, $url) {
-    $this->default_license = $default_license;
-    $this->default_status = $default_status;
-    $this->id = $id;
-    $this->image_url = $image_url;
-    $this->name = $name;
-    $this->token = $token;
-    $this->url = $url;
   }
 }
