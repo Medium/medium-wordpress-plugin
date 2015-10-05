@@ -64,6 +64,7 @@ class Medium_Admin {
     $token = $_POST["medium_integration_token"];
     $status = $_POST["medium_default_post_status"];
     $license = $_POST["medium_default_post_license"];
+    $cross_link = $_POST["medium_default_post_cross_link"];
 
     $medium_user = Medium_User::get_by_wp_id($user_id);
 
@@ -73,6 +74,10 @@ class Medium_Admin {
 
     if ($medium_user->default_license != $license) {
       $medium_user->default_license = $license;
+    }
+
+    if ($medium_user->default_cross_link != $cross_link) {
+      $medium_user->default_cross_link = $cross_link;
     }
 
     if (!$token) {
@@ -111,6 +116,7 @@ class Medium_Admin {
     Medium_View::render("form-user-profile", array(
       "medium_post_statuses" => self::_get_post_statuses(),
       "medium_post_licenses" => self::_get_post_licenses(),
+      "medium_post_cross_link_options" => self::_get_post_cross_link_options(),
       "medium_user" => $medium_user
     ));
   }
@@ -214,7 +220,8 @@ class Medium_Admin {
         $medium_post->status = $medium_user->default_status;
       }
       if (!$medium_post->cross_link) {
-        $medium_post->cross_link = "yes";
+        // Default to no cross-linking, per WordPress guidelines.
+        $medium_post->cross_link = $medium_user->default_cross_link;
       }
       $options_visibility_class = $medium_post->status == "none" ? "hidden" : "";
       Medium_View::render("form-post-box-actions", array(
@@ -359,8 +366,8 @@ class Medium_Admin {
    */
   private static function _get_post_cross_link_options() {
     return array(
-      "yes" => __("Yes", MEDIUM_TEXTDOMAIN),
-      "no" => __("No", MEDIUM_TEXTDOMAIN)
+      "no" => __("No", MEDIUM_TEXTDOMAIN),
+      "yes" => __("Yes", MEDIUM_TEXTDOMAIN)
     );
   }
 

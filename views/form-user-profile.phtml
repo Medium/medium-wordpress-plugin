@@ -25,6 +25,10 @@
 				}
 				?>
 			</select>
+			<p class="description">
+				The default status to use when creating a post on Medium. Unlisted posts will not<br>
+				be indexed, nor distributed through Medium. Can be changed for each post.
+			</p>
 		</td>
 	</tr>
 	<tr>
@@ -39,6 +43,27 @@
 				}
 				?>
 			</select>
+			<p class="description">
+				The default license to use when creating a post on Medium. Does not display any license<br>
+				information locally. Can be changed for each post.</p>
+		</td>
+	</tr>
+	<tr>
+		<th><label for="medium_default_post_cross_link">Default cross-link status</label></th>
+		<td>
+			<select name="medium_default_post_cross_link" id="medium_default_post_cross_link">
+				<?php
+				foreach ($data->medium_post_cross_link_options as $cross_link => $label) {
+					?>
+					<option value="<?= $cross_link ?>" <?php selected($data->medium_user->default_cross_link, $cross_link) ?>><?= $label ?></option>
+					<?php
+				}
+				?>
+			</select>
+			<p class="description">
+				Whether or not to cross-link posts between this blog and Medium. When enabled adds a <br>
+				link to the bottom of both your local post, and the Medium post. Can be changed for each post.
+			</p>
 		</td>
 	</tr>
 </table>

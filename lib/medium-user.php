@@ -6,6 +6,7 @@
  * Representation of a Medium user.
  */
 class Medium_User {
+  public $default_cross_link;
   public $default_license;
   public $default_status;
   public $id;
