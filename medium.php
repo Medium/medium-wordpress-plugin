@@ -27,4 +27,7 @@ define("MEDIUM_TEXTDOMAIN", "medium");
 if (is_admin()) {
   require_once(MEDIUM_PLUGIN_DIR . "lib/medium-admin.php");
   add_action("init", array("Medium_Admin", "init"));
+} else {
+  require_once(MEDIUM_PLUGIN_DIR . "lib/medium-site.php");
+  add_action("init", array("Medium_Site", "init"));
 }

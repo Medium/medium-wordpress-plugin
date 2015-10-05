@@ -27,7 +27,7 @@
 	</div>
 </div>
 
-<div class="misc-pub-section misc-pub-medium-license <?= $data->license_visibility_class ?>">
+<div class="misc-pub-section misc-pub-medium-license <?= $data->options_visibility_class ?>">
 	<span id="medium-license">License: <b><span id="post-medium-license-display"><?= $data->medium_post_licenses[$data->medium_post->license] ?></span></b>
 		<a href="#edit_medium_license" class="edit-medium-license hide-if-no-js">
 			<span aria-hidden="true">Edit</span>
@@ -48,6 +48,31 @@
 		<p>
 		 <a href="#medium-license" class="save-post-medium-license hide-if-no-js button"><?= __('OK'); ?></a>
 		 <a href="#medium-license" class="cancel-post-medium-license hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		</p>
+	</div>
+</div>
+
+<div class="misc-pub-section misc-pub-medium-cross-link <?= $data->options_visibility_class ?>">
+	<span id="medium-cross-link">Cross-link posts: <b><span id="post-medium-cross-link-display"><?= $data->medium_post_cross_link_options[$data->medium_post->cross_link] ?></span></b>
+		<a href="#edit_medium_cross_link" class="edit-medium-cross-link hide-if-no-js">
+			<span aria-hidden="true">Edit</span>
+			<span class="screen-reader-text">Edit cross-link status</span>
+		</a>
+	</span>
+
+	<div id="post-medium-cross-link-select" class="hide-if-js">
+		<input type="hidden" id="medium-cross-link-hidden" value="<?= $data->medium_post->cross_link ?>" />
+		<?php
+		foreach ($data->medium_post_cross_link_options as $cross_link => $label) {
+			?>
+			<input type="radio" name="medium-cross-link" id="medium-cross-link-radio-<?= $cross_link ?>" value="<?= $cross_link ?>" <?php checked($data->medium_post->cross_link, $cross_link) ?> />
+			<label for="medium-cross-link-radio-<?= $cross_link ?>" class="selectit"><?= $label ?></label><br />
+			<?php
+		}
+		?>
+		<p>
+		 <a href="#medium-cross-link" class="save-post-medium-cross-link hide-if-no-js button"><?= __('OK'); ?></a>
+		 <a href="#medium-cross-link" class="cancel-post-medium-cross-link hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
 		</p>
 	</div>
 </div>
