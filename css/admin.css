@@ -1,19 +1,22 @@
-.post-medium-images {
-  margin: 0 auto 10px;
-  width: 175px;
-}
 .post-medium-image {
-  width: 80px;
-  width: 80px;
+  width: 40px;
+  width: 40px;
 }
 .post-medium-image.post-medium-image-logo {
-  margin-right: 10px;
+  float: right;
 }
 .post-medium-image.post-medium-image-avatar {
+  float: left;
   border-radius: 100%;
 }
+#medium-status {
+  padding-top: 10px;
+  display: block;
+  clear: both;
+}
 #medium-post-link {
-  text-align: center;
+  padding-top: 10px;
+  clear: both;
 }
 #medium-post-link p {
   margin-bottom: 0;
