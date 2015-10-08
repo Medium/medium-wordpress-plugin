@@ -1,3 +1,13 @@
 <div class="error">
-	<p><strong><?= $data->token ?></strong> is not a valid Medium integration token.</p>
+	<p>
+		<?php
+		printf(
+			_x( '%s is not a valid Medium integration token.', 'medium', 'Medium integration token' ),
+			sprintf(
+				'<strong>%s</strong>',
+				esc_html( $data->token )
+			)
+		)
+		?>
+	</p>
 </div>
