@@ -31,4 +31,4 @@ Medium is developed and maintained by [Medium](http://medium.com/ "medium.com").
 = Requirements =
 
 * WordPress 3.3+
-* PHP 5+
+* PHP 5.2.4+
