@@ -14,7 +14,7 @@ Medium lets you publish posts automatically to a Medium profile.
 
 = About =
 
-Medium is developed and maintained by [Medium](http://medium.com/ "medium.com"). For support, contact us at [yourfriends@medium.com](mailto://yourfriends@medium.com).
+Medium is developed and maintained by [Medium](https://medium.com/ "medium.com"). For support, contact us at [yourfriends@medium.com](mailto://yourfriends@medium.com).
 
 == Installation ==
 
