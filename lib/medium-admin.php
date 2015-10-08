@@ -136,6 +136,12 @@ class Medium_Admin {
   public static function save_post($post_id, $post) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
 
+    $allowed_post_types = (array) apply_filters('medium_allowed_post_types', array('post'));
+
+    if (!in_array(get_post_type($post_id), $allowed_post_types)) {
+      return;
+    }
+
     $medium_post = Medium_Post::get_by_wp_id($post_id);
 
     // If this post has already been sent to Medium, no need to do anything.
