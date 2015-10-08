@@ -138,7 +138,7 @@ class Medium_Admin {
 
     $allowed_post_types = (array) apply_filters('medium_allowed_post_types', array('post'));
 
-    if (!in_array(get_post_type($post_id), $allowed_post_types)) {
+    if (!in_array($post->post_type, $allowed_post_types)) {
       return;
     }
 
