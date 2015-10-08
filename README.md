@@ -9,12 +9,15 @@ Features
 * Support for Creative Commons and Public Domain licensing.
 * Support for creating posts as drafts, unlisted, or public.
 
-Contributors
+Contributing
 ------------
 
-[Jamie Talbot](https://github.com/majelbstoat)
-
 Questions, comments, bug reports, and pull requests are all welcomed. If you haven't contributed to a Medium project before please head over to the [Open Source Project](https://github.com/Medium/opensource#note-to-external-contributors) and fill out an OCLA (it should be pretty painless).
+
+Authors
+-------
+
+[Jamie Talbot](https://github.com/majelbstoat)
 
 License
 -------
