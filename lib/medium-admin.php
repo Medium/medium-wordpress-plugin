@@ -49,7 +49,7 @@ class Medium_Admin {
    * Renders admin notices.
    */
   public static function admin_notices() {
-    if (!$_SESSION["medium_notices"]) return;
+    if (!isset($_SESSION["medium_notices"])) return;
     foreach ($_SESSION["medium_notices"] as $name => $args) {
       Medium_View::render("notice-$name", $args);
     }
@@ -428,7 +428,7 @@ class Medium_Admin {
    * Adds a notice to the admin panel.
    */
   private static function _add_notice($name, array $args = array()) {
-    if (!$_SESSION["medium_notices"]) {
+    if (!isset($_SESSION["medium_notices"])) {
       $_SESSION["medium_notices"] = array();
     }
     $_SESSION["medium_notices"][$name] = $args;
