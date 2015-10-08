@@ -8,7 +8,7 @@
 				<p class="description">
 					<?php
 					printf(
-						_x( 'Connected to Medium as %s.', 'medium', 'Medium user profile link' ),
+						_x( 'Connected to Medium as %s.', 'Medium user profile link', 'medium' ),
 						sprintf(
 							'<a href="%s">%s</a>',
 							esc_url( $data->medium_user->url ),
@@ -21,7 +21,7 @@
 				<p class="description">
 					<?php
 					printf(
-						_x( 'You can get this from the Integration Tokens section of your %s.', 'medium', 'Medium settings link' ),
+						_x( 'You can get this from the Integration Tokens section of your %s.', 'Medium settings link', 'medium' ),
 						sprintf(
 							'<a href="https://medium.com/me/settings#integration-tokens" target="_blank">%s</a>',
 							__( 'Medium Settings', 'medium' )
