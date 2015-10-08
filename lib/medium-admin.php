@@ -145,7 +145,7 @@ class Medium_Admin {
     $medium_post = Medium_Post::get_by_wp_id($post_id);
 
     // If this post has already been sent to Medium, no need to do anything.
-    if (isset($medium_post->id)) return;
+    if (!empty($medium_post->id)) return;
 
     if (isset($_REQUEST["medium-status"])) {
       $medium_post->status = $_REQUEST["medium-status"];
