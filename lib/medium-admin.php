@@ -39,7 +39,7 @@ class Medium_Admin {
    * Initialises admin functionality.
    */
   public static function admin_init() {
-    load_plugin_textdomain(MEDIUM_TEXTDOMAIN);
+    load_plugin_textdomain("medium");
 
     wp_enqueue_script("medium_admin_js", MEDIUM_PLUGIN_URL . "js/admin.js", array(), MEDIUM_VERSION);
     wp_enqueue_style("medium_admin_css", MEDIUM_PLUGIN_URL . "css/admin.css", array(), MEDIUM_VERSION);
@@ -337,10 +337,10 @@ class Medium_Admin {
    */
   private static function _get_post_statuses() {
     return array(
-      "none" => __("None", MEDIUM_TEXTDOMAIN),
-      "public" => __("Public", MEDIUM_TEXTDOMAIN),
-      "draft" => __("Draft", MEDIUM_TEXTDOMAIN),
-      "unlisted" => __("Unlisted", MEDIUM_TEXTDOMAIN)
+      "none" => __("None", "medium"),
+      "public" => __("Public", "medium"),
+      "draft" => __("Draft", "medium"),
+      "unlisted" => __("Unlisted", "medium")
     );
   }
 
@@ -349,15 +349,15 @@ class Medium_Admin {
    */
   private static function _get_post_licenses() {
     return array(
-      "all-rights-reserved" => __("All rights reserved", MEDIUM_TEXTDOMAIN),
-      "cc-40-by" => __("CC 4.0 BY", MEDIUM_TEXTDOMAIN),
-      "cc-40-by-nd" => __("CC 4.0 BY-ND", MEDIUM_TEXTDOMAIN),
-      "cc-40-by-sa" => __("CC 4.0 BY-SA", MEDIUM_TEXTDOMAIN),
-      "cc-40-by-nc" => __("CC 4.0 BY-NC", MEDIUM_TEXTDOMAIN),
-      "cc-40-by-nc-nd" => __("CC 4.0 BY-NC-ND", MEDIUM_TEXTDOMAIN),
-      "cc-40-by-nc-sa" => __("CC 4.0 BY-NC-SA", MEDIUM_TEXTDOMAIN),
-      "cc-40-zero" => __("CC Copyright waiver", MEDIUM_TEXTDOMAIN),
-      "public-domain" => __("Public domain", MEDIUM_TEXTDOMAIN)
+      "all-rights-reserved" => __("All rights reserved", "medium"),
+      "cc-40-by" => __("CC 4.0 BY", "medium"),
+      "cc-40-by-nd" => __("CC 4.0 BY-ND", "medium"),
+      "cc-40-by-sa" => __("CC 4.0 BY-SA", "medium"),
+      "cc-40-by-nc" => __("CC 4.0 BY-NC", "medium"),
+      "cc-40-by-nc-nd" => __("CC 4.0 BY-NC-ND", "medium"),
+      "cc-40-by-nc-sa" => __("CC 4.0 BY-NC-SA", "medium"),
+      "cc-40-zero" => __("CC Copyright waiver", "medium"),
+      "public-domain" => __("Public domain", "medium")
     );
   }
 
@@ -366,8 +366,8 @@ class Medium_Admin {
    */
   private static function _get_post_cross_link_options() {
     return array(
-      "no" => __("No", MEDIUM_TEXTDOMAIN),
-      "yes" => __("Yes", MEDIUM_TEXTDOMAIN)
+      "no" => __("No", "medium"),
+      "yes" => __("Yes", "medium")
     );
   }
 
