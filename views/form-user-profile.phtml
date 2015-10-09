@@ -1,20 +1,39 @@
-<h3 id="medium">Medium</h3>
+<h3 id="medium"><?php _e( 'Medium', 'medium' ) ?></h3>
 <table class="form-table">
 	<tr>
-		<th><label for="medium_integration_token">Integration Token</label></th>
+		<th><label for="medium_integration_token"><?php _e( 'Integration Token', 'medium' ) ?></label></th>
 		<td>
-			<input type="text" name="medium_integration_token" id="medium_integration_token" value="<?= $data->medium_user->token ?>" class="regular-text" /><br />
-			<?php
-			if ($data->medium_user->token) {
-				?><p class="description">Connected to Medium as <a href="<?= $data->medium_user->url ?>"><?= $data->medium_user->name ?></a>.</p><?php
-			} else {
-				?><p class="description">You can get this from the Integration Tokens section of your <a href="https://medium.com/me/settings#integration-tokens" target="_blank">Medium Settings</a>.</p><?php
-			}
-			?>
+			<input type="text" name="medium_integration_token" id="medium_integration_token" value="<?= $data->medium_user->token ?>" class="regular-text code" /><br />
+			<?php if ( $data->medium_user->token ) : ?>
+				<p class="description">
+					<?php
+					printf(
+						_x( 'Connected to Medium as %s.', 'Medium user profile link', 'medium' ),
+						sprintf(
+							'<a href="%s">%s</a>',
+							esc_url( $data->medium_user->url ),
+							esc_html( $data->medium_user->name )
+						)
+					)
+					?>
+				</p>
+			<?php else : ?>
+				<p class="description">
+					<?php
+					printf(
+						_x( 'You can get this from the Integration Tokens section of your %s.', 'Medium settings link', 'medium' ),
+						sprintf(
+							'<a href="https://medium.com/me/settings#integration-tokens" target="_blank">%s</a>',
+							__( 'Medium Settings', 'medium' )
+						)
+					)
+					?>
+				</p>
+			<?php endif; ?>
 		</td>
 	</tr>
 	<tr>
-		<th><label for="medium_default_post_status">Default crosspost status</label></th>
+		<th><label for="medium_default_post_status"><?php _e( 'Default crosspost status', 'medium' ) ?></label></th>
 		<td>
 			<select name="medium_default_post_status" id="medium_default_post_status">
 				<?php
@@ -26,13 +45,12 @@
 				?>
 			</select>
 			<p class="description">
-				The default status to use when creating a post on Medium. Unlisted posts will not<br>
-				be indexed, nor distributed through Medium. Can be changed for each post.
+				<?php _e( 'The default status to use when creating a post on Medium. Unlisted posts will not be indexed, nor distributed through Medium. Can be changed for each post.', 'medium' ) ?>
 			</p>
 		</td>
 	</tr>
 	<tr>
-		<th><label for="medium_default_post_license">Default crosspost license</label></th>
+		<th><label for="medium_default_post_license"><?php _e( 'Default crosspost license', 'medium' ) ?></label></th>
 		<td>
 			<select name="medium_default_post_license" id="medium_default_post_license">
 				<?php
@@ -44,12 +62,12 @@
 				?>
 			</select>
 			<p class="description">
-				The default license to use when creating a post on Medium. Does not display any license<br>
-				information locally. Can be changed for each post.</p>
+				<?php _e( 'The default license to use when creating a post on Medium. Does not display any license information locally. Can be changed for each post.', 'medium' ) ?><br>
+			</p>
 		</td>
 	</tr>
 	<tr>
-		<th><label for="medium_default_post_cross_link">Default cross-link status</label></th>
+		<th><label for="medium_default_post_cross_link"><?php _e( 'Default cross-link status', 'medium' ) ?></label></th>
 		<td>
 			<select name="medium_default_post_cross_link" id="medium_default_post_cross_link">
 				<?php
@@ -61,8 +79,7 @@
 				?>
 			</select>
 			<p class="description">
-				Whether or not to cross-link posts between this blog and Medium. When enabled adds a <br>
-				link to the bottom of both your local post, and the Medium post. Can be changed for each post.
+				<?php _e( 'Whether or not to cross-link posts between this blog and Medium. When enabled adds a link to the bottom of both your local post, and the Medium post. Can be changed for each post.', 'medium' ) ?>
 			</p>
 		</td>
 	</tr>

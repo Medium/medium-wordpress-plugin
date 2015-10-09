@@ -3,10 +3,10 @@
 		<a href="<?= $data->medium_user->url ?>"><img class="post-medium-image post-medium-image-avatar" src="<?= $data->medium_user->image_url ?>"/></a>
 		<a href="https://medium.com"><img class="post-medium-image post-medium-image-logo" src="<?= $data->medium_logo_url ?>"/></a>
 	</div>
-	<span id="medium-status">Crosspost as: <b><span id="post-medium-status-display"><?= $data->medium_post_statuses[$data->medium_post->status] ?></span></b>
+	<span id="medium-status"><?php _e( 'Crosspost as:', 'medium' ) ?> <b><span id="post-medium-status-display"><?= $data->medium_post_statuses[$data->medium_post->status] ?></span></b>
 		<a href="#edit_medium_status" class="edit-medium-status hide-if-no-js">
-			<span aria-hidden="true">Edit</span>
-			<span class="screen-reader-text">Edit Crosspost option</span>
+			<span aria-hidden="true"><?php _e( 'Edit', 'medium' ) ?></span>
+			<span class="screen-reader-text"><?php _e( 'Edit Crosspost option', 'medium' ) ?></span>
 		</a>
 	</span>
 
@@ -21,17 +21,17 @@
 		}
 		?>
 		<p>
-		 <a href="#medium-status" class="save-post-medium-status hide-if-no-js button"><?= __('OK'); ?></a>
-		 <a href="#medium-status" class="cancel-post-medium-status hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		 <a href="#medium-status" class="save-post-medium-status hide-if-no-js button"><?php _e( 'OK', 'medium' ) ?></a>
+		 <a href="#medium-status" class="cancel-post-medium-status hide-if-no-js button-cancel"><?php _e( 'Cancel', 'medium' ) ?></a>
 		</p>
 	</div>
 </div>
 
 <div class="misc-pub-section misc-pub-medium-license <?= $data->options_visibility_class ?>">
-	<span id="medium-license">License: <b><span id="post-medium-license-display"><?= $data->medium_post_licenses[$data->medium_post->license] ?></span></b>
+	<span id="medium-license"><?php _e( 'License:', 'medium' ) ?> <b><span id="post-medium-license-display"><?= $data->medium_post_licenses[$data->medium_post->license] ?></span></b>
 		<a href="#edit_medium_license" class="edit-medium-license hide-if-no-js">
-			<span aria-hidden="true">Edit</span>
-			<span class="screen-reader-text">Edit Medium license</span>
+			<span aria-hidden="true"><?php _e( 'Edit', 'medium' ) ?></span>
+			<span class="screen-reader-text"><?php _e( 'Edit Medium license', 'medium' ) ?></span>
 		</a>
 	</span>
 
@@ -46,17 +46,17 @@
 		}
 		?>
 		<p>
-		 <a href="#medium-license" class="save-post-medium-license hide-if-no-js button"><?= __('OK'); ?></a>
-		 <a href="#medium-license" class="cancel-post-medium-license hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		 <a href="#medium-license" class="save-post-medium-license hide-if-no-js button"><?php _e( 'OK', 'medium' ) ?></a>
+		 <a href="#medium-license" class="cancel-post-medium-license hide-if-no-js button-cancel"><?php _e( 'Cancel', 'medium' ) ?></a>
 		</p>
 	</div>
 </div>
 
 <div class="misc-pub-section misc-pub-medium-cross-link <?= $data->options_visibility_class ?>">
-	<span id="medium-cross-link">Cross-link posts: <b><span id="post-medium-cross-link-display"><?= $data->medium_post_cross_link_options[$data->medium_post->cross_link] ?></span></b>
+	<span id="medium-cross-link"><?php _e( 'Cross-link posts:', 'medium' ) ?> <b><span id="post-medium-cross-link-display"><?= $data->medium_post_cross_link_options[$data->medium_post->cross_link] ?></span></b>
 		<a href="#edit_medium_cross_link" class="edit-medium-cross-link hide-if-no-js">
-			<span aria-hidden="true">Edit</span>
-			<span class="screen-reader-text">Edit cross-link status</span>
+			<span aria-hidden="true"><?php _e( 'Edit', 'medium' ) ?></span>
+			<span class="screen-reader-text"><?php _e( 'Edit cross-link status', 'medium' ) ?></span>
 		</a>
 	</span>
 
@@ -71,8 +71,8 @@
 		}
 		?>
 		<p>
-		 <a href="#medium-cross-link" class="save-post-medium-cross-link hide-if-no-js button"><?= __('OK'); ?></a>
-		 <a href="#medium-cross-link" class="cancel-post-medium-cross-link hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		 <a href="#medium-cross-link" class="save-post-medium-cross-link hide-if-no-js button"><?php _e( 'OK', 'medium' ) ?></a>
+		 <a href="#medium-cross-link" class="cancel-post-medium-cross-link hide-if-no-js button-cancel"><?php _e( 'Cancel', 'medium' ) ?></a>
 		</p>
 	</div>
 </div>

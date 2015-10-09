@@ -1,3 +1,17 @@
-<div class="updated">
-	<p><?= $data->medium_post_statuses[$data->medium_post->status] ?> post successfully created on Medium. <a href="<?= $data->medium_post->url ?>" target="_blank">View post</a>.</p>
-</div>
+<?php if ( isset( $data->medium_post_statuses[ $data->medium_post->status ] ) ) : ?>
+	<div class="updated">
+		<p>
+			<?php
+			printf(
+				_x( '%s post successfully created on Medium.', 'Medium integration token', 'medium' ),
+				esc_html( $data->medium_post_statuses[ $data->medium_post->status ] )
+			);
+			printf(
+				'<a href="%s" target="_blank">%s</a>',
+				esc_url( $data->medium_post->url ),
+				__( 'View post', 'medium' )
+			);
+			?>
+		</p>
+	</div>
+<?php endif; ?>

@@ -4,7 +4,7 @@
 		<a href="https://medium.com"><img class="post-medium-image post-medium-image-logo" src="<?= $data->medium_logo_url ?>"/></a>
 	</div>
 	<div id="medium-post-link">
-		<b><a href="<?= $data->medium_post->url ?>" target="_blank">View Medium post</a></b>
-		<p>Further edits to this entry will not be reflected on Medium.</p>
+		<b><a href="<?= $data->medium_post->url ?>" target="_blank"><?php _e( 'View Medium post', 'medium' ) ?></a></b>
+		<p><?php _e( 'Further edits to this entry will not be reflected on Medium.', 'medium' ) ?></p>
 	</div>
 </div>
