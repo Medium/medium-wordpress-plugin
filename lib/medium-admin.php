@@ -255,12 +255,13 @@ class Medium_Admin {
       }
     }
 
+    $permalink = get_permalink($post->ID);
     $content = Medium_View::render("content-rendered-post", array(
       "title" => $post->post_title,
       "content" => self::_prepare_content($post),
       "cross_link" => $medium_post->cross_link == "yes",
       "site_name" => get_bloginfo('name'),
-      "permalink" => get_permalink($post->ID)
+      "permalink" => $permalink
     ), true);
 
     $body = array(
