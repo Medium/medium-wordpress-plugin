@@ -136,15 +136,15 @@ class Medium_Admin {
   public static function save_post($post_id, $post) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
 
-    // Use the ID of the parent post if this is a post revision
-    if ($parent_id = wp_is_post_revision($post)) {
-      $post_id = $parent_id;
-    }
-
     $allowed_post_types = (array) apply_filters('medium_allowed_post_types', array('post'));
 
     if (!in_array($post->post_type, $allowed_post_types)) {
       return;
+    }
+
+    // Use the ID of the parent post if this is a post revision
+    if ($parent_id = wp_is_post_revision($post)) {
+      $post_id = $parent_id;
     }
 
     $medium_post = Medium_Post::get_by_wp_id($post_id);
