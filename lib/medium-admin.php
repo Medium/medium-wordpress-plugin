@@ -131,7 +131,7 @@ class Medium_Admin {
 
   /**
    * Save Medium metadata when a post is saved.
-   * Potentially crossposts to Medium if the conditions are right.
+   * Potentially cross-posts to Medium if the conditions are right.
    */
   public static function save_post($post_id, $post) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
@@ -157,14 +157,14 @@ class Medium_Admin {
     // If the post isn't published, no need to do anything else.
     $published = $post->post_status == "publish";
 
-    // If we don't want to crosspost this post to Medium, no need to do anything else.
-    $skipCrossposting = $medium_post->status == "none";
+    // If we don't want to cross-post this post to Medium, no need to do anything else.
+    $skip_cross_posting = $medium_post->status == "none";
 
     // If the user isn't connected, no need to do anything.
     $medium_user = Medium_User::get_by_wp_id($post->post_author);
     $connected = $medium_user->id && $medium_user->token;
 
-    if (!$published || $skipCrossposting || !$connected) {
+    if (!$published || $skip_cross_posting || !$connected) {
       // Save the updated license and status.
       $medium_post->save($post_id);
       return;
@@ -174,7 +174,7 @@ class Medium_Admin {
     // connected, we haven't sent it to Medium previously, and we want to send it.
 
     try {
-      $created_medium_post = self::crosspost($post, $medium_post, $medium_user);
+      $created_medium_post = self::cross_post($post, $medium_post, $medium_user);
     } catch (Exception $e) {
       self::_add_api_error_notice($e, $medium_user->token);
       return;
@@ -196,7 +196,7 @@ class Medium_Admin {
   // Utilities
 
   /**
-   * Callback that renders the Crosspost meta box.
+   * Callback that renders the Cross-post meta box.
    */
   public static function meta_box_callback($post, $args) {
     global $current_user;
@@ -249,7 +249,7 @@ class Medium_Admin {
   /**
    * Creates a post on Medium.
    */
-  public static function crosspost($post, $medium_post, $medium_user) {
+  public static function cross_post($post, $medium_post, $medium_user) {
     $tag_data = wp_get_post_tags($post->ID);
     $tags = array();
     foreach ($tag_data as $tag) {
