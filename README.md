@@ -19,6 +19,11 @@ Authors
 
 [Jamie Talbot](https://github.com/majelbstoat)
 
+Contributors
+-------
+
+[Frankie Jarrett](https://github.com/fjarrett)
+
 License
 -------
 
