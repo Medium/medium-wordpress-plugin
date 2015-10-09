@@ -18,14 +18,14 @@ Medium is developed and maintained by [Medium](https://medium.com/ "medium.com")
 
 == Installation ==
 
-1. Extract `medium-crosspost.zip` to your `/wp-content/plugins/` directory.
-2. In the admin panel under plugins activate Medium Crosspost.
-3. Add your Integration Token on the plugin settings page.
+1. Extract `medium.zip` to your `/wp-content/plugins/` directory.
+2. In the admin panel under plugins, activate Medium.
+3. Add an Integration Token on your profile page.
 4. Were you expecting more steps? Sorry to disappoint!
 
 == Changelog ==
 
-= Medium Crosspost 1.0 =
+= Medium 1.0 =
 * Initial release!
 
 = Requirements =
