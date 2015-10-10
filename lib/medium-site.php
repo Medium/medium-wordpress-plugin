@@ -23,6 +23,7 @@ class Medium_Site {
 
   public static function the_content($content) {
     global $post;
+    if (!is_single() || !is_main_query()) return $content;
 
     $medium_post = Medium_Post::get_by_wp_id($post->ID);
     if ($medium_post->id && $medium_post->cross_link) {
