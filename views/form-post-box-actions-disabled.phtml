@@ -1,3 +1,8 @@
 <div class="misc-pub-section misc-pub-medium-status">
-  <span>Add an integration token on <a href="<?= $data->edit_profile_url ?>">your profile page</a> to enable cross-posting to Medium.</span>
+  <span>
+    <?php
+    $link = sprintf('<a href="%s">%s</a>', $data->edit_profile_url, __("your profile page", "medium"));
+    printf(__("Add an integration token on %s to enable cross-posting to Medium.", "medium"), $link);
+    ?>
+  </span>
 </div>

@@ -11,6 +11,7 @@ Author: A Medium Corporation
 Author URI: https://medium.com
 License: Apache
 Text Domain: medium
+Domain Path: /languages
 */
 
 // Disallow direct access

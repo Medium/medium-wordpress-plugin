@@ -1,3 +1,8 @@
 <div class="updated">
-	<p>Successfully connected to Medium as <strong><a href="<?= $data->user->url ?>"><?= $data->user->name ?></a></strong>.</p>
+	<p>
+		<?php
+		$userLink = sprintf('<strong><a href="%s">%s</a></strong>', $data->user->url, $data->user->name);
+		printf(__("Successfully connected to Medium as %s.", "medium"), $userLink);
+		?>
+	</p>
 </div>

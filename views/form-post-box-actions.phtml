@@ -1,78 +1,87 @@
 <div class="misc-pub-section misc-pub-medium-status">
 	<div class="post-medium-images">
-		<a href="<?= $data->medium_user->url ?>"><img class="post-medium-image post-medium-image-avatar" src="<?= $data->medium_user->image_url ?>"/></a>
-		<a href="https://medium.com"><img class="post-medium-image post-medium-image-logo" src="<?= $data->medium_logo_url ?>"/></a>
+		<a href="<?php echo $data->medium_user->url ?>"><img class="post-medium-image post-medium-image-avatar" src="<?php echo $data->medium_user->image_url ?>"/></a>
+		<a href="https://medium.com"><img class="post-medium-image post-medium-image-logo" src="<?php echo $data->medium_logo_url ?>"/></a>
 	</div>
-	<span id="medium-status">Cross-post as: <b><span id="post-medium-status-display"><?= $data->medium_post_statuses[$data->medium_post->status] ?></span></b>
+	<?php
+	$statusSpan = '<b><span id="post-medium-status-display">' . $data->medium_post_statuses[$data->medium_post->status] . "</span></b>";
+	?>
+	<span id="medium-status"><?php printf(__("Cross-post as: %s", "medium"), $statusSpan) ?>
 		<a href="#edit_medium_status" class="edit-medium-status hide-if-no-js">
-			<span aria-hidden="true">Edit</span>
-			<span class="screen-reader-text">Edit Cross-post option</span>
+			<span aria-hidden="true"><?php _e("Edit", "medium") ?></span>
+			<span class="screen-reader-text"><?php _e("Edit Cross-post option", "medium") ?></span>
 		</a>
 	</span>
 
 	<div id="post-medium-status-select" class="hide-if-js">
-		<input type="hidden" id="medium-status-hidden" value="<?= $data->medium_post->status ?>" />
+		<input type="hidden" id="medium-status-hidden" value="<?php echo $data->medium_post->status ?>" />
 		<?php
 		foreach ($data->medium_post_statuses as $status => $label) {
 			?>
-			<input type="radio" name="medium-status" id="medium-status-radio-<?= $status ?>" value="<?= $status ?>" <?php checked($data->medium_post->status, $status) ?> />
-			<label for="medium-status-radio-<?= $status ?>" class="selectit"><?= $label ?></label><br />
+			<input type="radio" name="medium-status" id="medium-status-radio-<?php echo $status ?>" value="<?php echo $status ?>" <?php checked($data->medium_post->status, $status) ?> />
+			<label for="medium-status-radio-<?php echo $status ?>" class="selectit"><?php echo $label ?></label><br />
 			<?php
 		}
 		?>
 		<p>
-		 <a href="#medium-status" class="save-post-medium-status hide-if-no-js button"><?= __('OK'); ?></a>
-		 <a href="#medium-status" class="cancel-post-medium-status hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+			<a href="#medium-status" class="save-post-medium-status hide-if-no-js button"><?php _e("OK", "medium"); ?></a>
+			<a href="#medium-status" class="cancel-post-medium-status hide-if-no-js button-cancel"><?php _e("Cancel", "medium"); ?></a>
 		</p>
 	</div>
 </div>
 
-<div class="misc-pub-section misc-pub-medium-license <?= $data->options_visibility_class ?>">
-	<span id="medium-license">License: <b><span id="post-medium-license-display"><?= $data->medium_post_licenses[$data->medium_post->license] ?></span></b>
+<div class="misc-pub-section misc-pub-medium-license <?php echo $data->options_visibility_class ?>">
+	<?php
+	$licenseSpan = '<b><span id="post-medium-license-display">' . $data->medium_post_licenses[$data->medium_post->license] . "</span></b>";
+	?>
+	<span id="medium-license"><?php printf(__("License: %s", "medium"), $licenseSpan) ?>
 		<a href="#edit_medium_license" class="edit-medium-license hide-if-no-js">
-			<span aria-hidden="true">Edit</span>
-			<span class="screen-reader-text">Edit Medium license</span>
+			<span aria-hidden="true"><?php _e("Edit", "medium") ?></span>
+			<span class="screen-reader-text"><?php _e("Edit Medium license", "medium") ?></span>
 		</a>
 	</span>
 
 	<div id="post-medium-license-select" class="hide-if-js">
-		<input type="hidden" id="medium-license-hidden" value="<?= $data->medium_post->license ?>" />
+		<input type="hidden" id="medium-license-hidden" value="<?php echo $data->medium_post->license ?>" />
 		<?php
 		foreach ($data->medium_post_licenses as $license => $label) {
 			?>
-			<input type="radio" name="medium-license" id="medium-license-radio-<?= $license ?>" value="<?= $license ?>" <?php checked($data->medium_post->license, $license) ?> />
-			<label for="medium-license-radio-<?= $license ?>" class="selectit"><?= $label ?></label><br />
+			<input type="radio" name="medium-license" id="medium-license-radio-<?php echo $license ?>" value="<?php echo $license ?>" <?php checked($data->medium_post->license, $license) ?> />
+			<label for="medium-license-radio-<?php echo $license ?>" class="selectit"><?php echo $label ?></label><br />
 			<?php
 		}
 		?>
 		<p>
-		 <a href="#medium-license" class="save-post-medium-license hide-if-no-js button"><?= __('OK'); ?></a>
-		 <a href="#medium-license" class="cancel-post-medium-license hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		  <a href="#medium-license" class="save-post-medium-license hide-if-no-js button"><?php _e("OK", "medium"); ?></a>
+		  <a href="#medium-license" class="cancel-post-medium-license hide-if-no-js button-cancel"><?php _e("Cancel", "medium"); ?></a>
 		</p>
 	</div>
 </div>
 
-<div class="misc-pub-section misc-pub-medium-cross-link <?= $data->options_visibility_class ?>">
-	<span id="medium-cross-link">Cross-link posts: <b><span id="post-medium-cross-link-display"><?= $data->medium_post_cross_link_options[$data->medium_post->cross_link] ?></span></b>
+<div class="misc-pub-section misc-pub-medium-cross-link <?php echo $data->options_visibility_class ?>">
+	<?php
+	$crossLinkSpan = '<b><span id="post-medium-cross-link-display">' . $data->medium_post_cross_link_options[$data->medium_post->cross_link] . "</span></b>";
+	?>
+	<span id="medium-cross-link"><?php printf(__("Cross-link posts: %s", "medium"), $crossLinkSpan) ?>
 		<a href="#edit_medium_cross_link" class="edit-medium-cross-link hide-if-no-js">
-			<span aria-hidden="true">Edit</span>
-			<span class="screen-reader-text">Edit cross-link status</span>
+			<span aria-hidden="true"><?php _e("Edit", "medium") ?></span>
+			<span class="screen-reader-text"><?php _e("Edit cross-link status", "medium") ?></span>
 		</a>
 	</span>
 
 	<div id="post-medium-cross-link-select" class="hide-if-js">
-		<input type="hidden" id="medium-cross-link-hidden" value="<?= $data->medium_post->cross_link ?>" />
+		<input type="hidden" id="medium-cross-link-hidden" value="<?php echo $data->medium_post->cross_link ?>" />
 		<?php
 		foreach ($data->medium_post_cross_link_options as $cross_link => $label) {
 			?>
-			<input type="radio" name="medium-cross-link" id="medium-cross-link-radio-<?= $cross_link ?>" value="<?= $cross_link ?>" <?php checked($data->medium_post->cross_link, $cross_link) ?> />
-			<label for="medium-cross-link-radio-<?= $cross_link ?>" class="selectit"><?= $label ?></label><br />
+			<input type="radio" name="medium-cross-link" id="medium-cross-link-radio-<?php echo $cross_link ?>" value="<?php echo $cross_link ?>" <?php checked($data->medium_post->cross_link, $cross_link) ?> />
+			<label for="medium-cross-link-radio-<?php echo $cross_link ?>" class="selectit"><?php echo $label ?></label><br />
 			<?php
 		}
 		?>
 		<p>
-		 <a href="#medium-cross-link" class="save-post-medium-cross-link hide-if-no-js button"><?= __('OK'); ?></a>
-		 <a href="#medium-cross-link" class="cancel-post-medium-cross-link hide-if-no-js button-cancel"><?= __('Cancel'); ?></a>
+		 <a href="#medium-cross-link" class="save-post-medium-cross-link hide-if-no-js button"><?php _e("OK", "medium"); ?></a>
+		 <a href="#medium-cross-link" class="cancel-post-medium-cross-link hide-if-no-js button-cancel"><?php _e("Cancel", "medium"); ?></a>
 		</p>
 	</div>
 </div>

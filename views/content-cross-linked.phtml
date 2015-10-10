@@ -1,3 +1,10 @@
-<?= $data->content ?>
+<?php echo $data->content ?>
 <hr>
-<p><em>Also published on <a href="<?= $data->medium_post->url ?>">Medium</a>.</em></p>
+<p>
+  <em>
+  <?php
+  $link = sprintf('<a href="%s">%s</a>', $data->medium_post->url, __("Medium", "medium"));
+  printf(__("Also published on %s.", "medium"), $link);
+  ?>
+  </em>
+</p>

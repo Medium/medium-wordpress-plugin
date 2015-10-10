@@ -1,9 +1,16 @@
-<h1><?= $data->title ?></h1>
-<?= $data->content ?>
+<h1><?php echo $data->title ?></h1>
 <?php
+echo $data->content;
 if ($data->cross_link) {
 	?>
 	<hr>
-	<p><em>Originally published at <a href="<?= $data->permalink ?>"><?= $data->site_name ?></a>.</em></p>
+	<p>
+		<em>
+			<?php
+		  $link = sprintf('<a href="%s">%s</a>', $data->permalink, $data->site_name);
+		  printf(__("Originally published at %s.", "medium"), $link);
+		  ?>
+		</em>
+	</p>
 	<?php
 }

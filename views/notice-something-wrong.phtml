@@ -1,3 +1,9 @@
 <div class="error">
-	<p><strong>Medium Error:</strong> <?= $data->message ?> (<?= $data->code ?>)</p>
+	<p>
+		<?php
+		/* translators: 1: error notice, 2: message, 3: code. */
+		$errorBlock = sprintf("<strong>%s</strong>", __("Medium Error:", "medium"));
+		printf(__('%1$s %2$s (%3$s)', "medium"), $errorBlock, $data->message, $data->code);
+		?>
+	</p>
 </div>

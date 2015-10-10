@@ -21,3 +21,6 @@
 #medium-post-link p {
   margin-bottom: 0;
 }
+.medium-wrapped {
+  width: 500px;
+}
