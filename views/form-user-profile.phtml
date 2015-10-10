@@ -1,68 +1,72 @@
-<h3 id="medium">Medium</h3>
+<h3 id="medium"><?php _e("Medium", "medium") ?></h3>
 <table class="form-table">
 	<tr>
-		<th><label for="medium_integration_token">Integration Token</label></th>
+		<th><label for="medium_integration_token"><?php _e("Integration Token", "medium") ?></label></th>
 		<td>
-			<input type="text" name="medium_integration_token" id="medium_integration_token" value="<?= $data->medium_user->token ?>" class="regular-text" /><br />
+			<input type="text" name="medium_integration_token" id="medium_integration_token" value="<?php echo $data->medium_user->token ?>" class="regular-text" /><br />
 			<?php
 			if ($data->medium_user->token) {
-				?><p class="description">Connected to Medium as <a href="<?= $data->medium_user->url ?>"><?= $data->medium_user->name ?></a>.</p><?php
+				$userLink = sprintf('<a href="%s">%s</a>', $data->medium_user->url, $data->medium_user->name);
+				?>
+				<p class="description"><?php printf(__("Connected to Medium as %s.", "medium"), $userLink) ?><p>
+				<?php
 			} else {
-				?><p class="description">You can get this from the Integration Tokens section of your <a href="https://medium.com/me/settings#integration-tokens" target="_blank">Medium Settings</a>.</p><?php
+				$settingsLink = sprintf('<a href="https://medium.com/me/settings#integration-tokens" target="_blank">%s</a>', __("your Medium Settings", "medium"));
+				?>
+				<p class="description"><?php printf(__("You can get this from the Integration Tokens section of %s.", "medium"), $settingsLink) ?></p>
+				<?php
 			}
 			?>
 		</td>
 	</tr>
 	<tr>
-		<th><label for="medium_default_post_status">Default cross-post status</label></th>
+		<th><label for="medium_default_post_status"><?php _e("Default cross-post status", "medium") ?></label></th>
 		<td>
 			<select name="medium_default_post_status" id="medium_default_post_status">
 				<?php
 				foreach ($data->medium_post_statuses as $status => $label) {
 					?>
-					<option value="<?= $status ?>" <?php selected($data->medium_user->default_status, $status) ?>><?= $label ?></option>
+					<option value="<?php echo $status ?>" <?php selected($data->medium_user->default_status, $status) ?>><?php echo $label ?></option>
 					<?php
 				}
 				?>
 			</select>
-			<p class="description">
-				The default status to use when creating a post on Medium. Unlisted posts will not<br>
-				be indexed, nor distributed through Medium. Can be changed for each post.
+			<p class="description medium-wrapped">
+				<?php _e("The default status to use when creating a post on Medium. Unlisted posts will not be indexed, nor distributed through Medium. Can be changed for each post.", "medium"); ?>
 			</p>
 		</td>
 	</tr>
 	<tr>
-		<th><label for="medium_default_post_license">Default cross-post license</label></th>
+		<th><label for="medium_default_post_license"><?php _e("Default cross-post license", "medium") ?></label></th>
 		<td>
 			<select name="medium_default_post_license" id="medium_default_post_license">
 				<?php
 				foreach ($data->medium_post_licenses as $license => $label) {
 					?>
-					<option value="<?= $license ?>" <?php selected($data->medium_user->default_license, $license) ?>><?= $label ?></option>
+					<option value="<?php echo $license ?>" <?php selected($data->medium_user->default_license, $license) ?>><?php echo $label ?></option>
 					<?php
 				}
 				?>
 			</select>
-			<p class="description">
-				The default license to use when creating a post on Medium. Does not display any license<br>
-				information locally. Can be changed for each post.</p>
+			<p class="description medium-wrapped">
+				<?php _e("The default license to use when creating a post on Medium. Does not display any license. information locally. Can be changed for each post.", "medium"); ?>
+			</p>
 		</td>
 	</tr>
 	<tr>
-		<th><label for="medium_default_post_cross_link">Default cross-link status</label></th>
+		<th><label for="medium_default_post_cross_link"><?php _e("Default cross-link status", "medium") ?></label></th>
 		<td>
 			<select name="medium_default_post_cross_link" id="medium_default_post_cross_link">
 				<?php
 				foreach ($data->medium_post_cross_link_options as $cross_link => $label) {
 					?>
-					<option value="<?= $cross_link ?>" <?php selected($data->medium_user->default_cross_link, $cross_link) ?>><?= $label ?></option>
+					<option value="<?php echo $cross_link ?>" <?php selected($data->medium_user->default_cross_link, $cross_link) ?>><?php echo $label ?></option>
 					<?php
 				}
 				?>
 			</select>
-			<p class="description">
-				Whether or not to cross-link posts between this blog and Medium. When enabled adds a <br>
-				link to the bottom of both your local post, and the Medium post. Can be changed for each post.
+			<p class="description medium-wrapped">
+				<?php _e("Whether or not to cross-link posts between this blog and Medium. When enabled adds a link to the bottom of both your local post, and the Medium post. Can be changed for each post.", "medium"); ?>
 			</p>
 		</td>
 	</tr>
