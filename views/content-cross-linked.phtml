@@ -1,9 +1,8 @@
-<?php echo $data->content ?>
 <hr>
 <p>
   <em>
   <?php
-  $link = sprintf('<a href="%s">%s</a>', $data->medium_post->url, __("Medium", "medium"));
+  $link = sprintf('<a href="%s">%s</a>', $data->url, __("Medium", "medium"));
   printf(__("Also published on %s.", "medium"), $link);
   ?>
   </em>
