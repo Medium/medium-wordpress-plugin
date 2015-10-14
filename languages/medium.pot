@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Medium 1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/medium\n"
-"POT-Creation-Date: 2015-10-10 21:54:09+00:00\n"
+"POT-Creation-Date: 2015-10-14 17:43:27+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -74,11 +74,11 @@ msgstr ""
 
 #. #-#-#-#-#  medium.pot (Medium 1.0)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: views/content-cross-linked.phtml:6 views/form-user-profile.phtml:1
+#: views/content-cross-linked.phtml:5 views/form-user-profile.phtml:1
 msgid "Medium"
 msgstr ""
 
-#: views/content-cross-linked.phtml:7
+#: views/content-cross-linked.phtml:6
 msgid "Also published on %s."
 msgstr ""
 
