@@ -28,7 +28,7 @@ class Medium_Site {
     if (!is_single() || !is_main_query()) return $content;
 
     $medium_post = Medium_Post::get_by_wp_id($post->ID);
-    if ($medium_post->id && $medium_post->cross_link) {
+    if ($medium_post->id && $medium_post->cross_link == "yes") {
       // We cannot directly render here because the_content filters are also
       // executed for the_excerpt (!). Best solution is a shortcode that we
       // then render, as shortcodes are ignored by the_excerpt.

@@ -36,6 +36,11 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.0.1 =
+* Fix: No longer show cross-links to Medium if you didn't want them. (Note to self: "no" is not falsey)
+* Change: Use WP's own remote request library to maximise compatibility with different server configurations.
+* i18n: German translation, contributed by https://github.com/lsinger
+
 = Medium 1.0 =
 * Initial release!
 
