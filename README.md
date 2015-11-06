@@ -4,7 +4,7 @@ The Medium plugin for WordPress allows you to cross-post your post entries to [M
 
 **This repository is used for development and should not be considered stable.** 
 
-Please install the plugin from within WordPress by going to `Plugins->Add New` and searching for Medium. Alternatively, you can download a stable version from `https://wordpress.org/plugins/medium`.
+Please install the plugin from within WordPress by going to `Plugins->Add New` and searching for Medium. Alternatively, you can download a stable version from [Medium Wordpress Plugin] (https://wordpress.org/plugins/medium).
 
 Features
 --------
