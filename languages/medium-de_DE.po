@@ -1,0 +1,245 @@
+# Copyright (C) 2015 Medium
+# This file is distributed under the same license as the Medium package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Medium 1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/medium\n"
+"POT-Creation-Date: 2015-10-28 13:31+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-10-28 13:44+0100\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.6\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de_DE\n"
+
+#: lib/medium-admin.php:344
+msgid "None"
+msgstr "Keine"
+
+#: lib/medium-admin.php:345
+msgid "Public"
+msgstr "Öffentlich"
+
+#: lib/medium-admin.php:346
+msgid "Draft"
+msgstr "Entwurf"
+
+#: lib/medium-admin.php:347
+msgid "Unlisted"
+msgstr "Nicht aufgeführt"
+
+#: lib/medium-admin.php:356
+msgid "All rights reserved"
+msgstr "Alle Rechte vorbehalten"
+
+#: lib/medium-admin.php:357
+msgid "CC 4.0 BY"
+msgstr "CC 4.0 BY"
+
+#: lib/medium-admin.php:358
+msgid "CC 4.0 BY-ND"
+msgstr "CC 4.0 BY-ND"
+
+#: lib/medium-admin.php:359
+msgid "CC 4.0 BY-SA"
+msgstr "CC 4.0 BY-SA"
+
+#: lib/medium-admin.php:360
+msgid "CC 4.0 BY-NC"
+msgstr "CC 4.0 BY-NC"
+
+#: lib/medium-admin.php:361
+msgid "CC 4.0 BY-NC-ND"
+msgstr "CC 4.0 BY-NC-ND"
+
+#: lib/medium-admin.php:362
+msgid "CC 4.0 BY-NC-SA"
+msgstr "CC 4.0 BY-NC-SA"
+
+#: lib/medium-admin.php:363
+msgid "CC Copyright waiver"
+msgstr "CC-Copyright-Verzicht"
+
+#: lib/medium-admin.php:364
+msgid "Public domain"
+msgstr "Public Domain"
+
+#: lib/medium-admin.php:373
+msgid "No"
+msgstr "Nein"
+
+#: lib/medium-admin.php:374
+msgid "Yes"
+msgstr "Ja"
+
+#. Plugin Name of the plugin/theme
+#: views/content-cross-linked.phtml:5 views/form-user-profile.phtml:1
+msgid "Medium"
+msgstr "Medium"
+
+#: views/content-cross-linked.phtml:6
+msgid "Also published on %s."
+msgstr "Auch unter %s veröffentlicht."
+
+#: views/content-rendered-post.phtml:11
+msgid "Originally published at %s."
+msgstr "Ursprünglich unter %s veröffentlicht."
+
+#: views/form-post-box-actions-disabled.phtml:4
+msgid "your profile page"
+msgstr "Ihre Profilseite"
+
+#: views/form-post-box-actions-disabled.phtml:5
+msgid "Add an integration token on %s to enable cross-posting to Medium."
+msgstr ""
+"Fügen Sie ein Integrations-Token auf %s hinzu, um das Cross-Posten auf "
+"Medium zu ermöglichen."
+
+#: views/form-post-box-actions.phtml:9
+msgid "Cross-post as: %s"
+msgstr "Cross-Posten als: %s"
+
+#: views/form-post-box-actions.phtml:11 views/form-post-box-actions.phtml:39
+#: views/form-post-box-actions.phtml:67
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: views/form-post-box-actions.phtml:12
+msgid "Edit Cross-post option"
+msgstr "Cross-Post-Option bearbeiten"
+
+#: views/form-post-box-actions.phtml:27 views/form-post-box-actions.phtml:55
+#: views/form-post-box-actions.phtml:83
+msgid "OK"
+msgstr "OK"
+
+#: views/form-post-box-actions.phtml:28 views/form-post-box-actions.phtml:56
+#: views/form-post-box-actions.phtml:84
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: views/form-post-box-actions.phtml:37
+msgid "License: %s"
+msgstr "Lizenz: %s"
+
+#: views/form-post-box-actions.phtml:40
+msgid "Edit Medium license"
+msgstr "Medium-Lizenz bearbeiten"
+
+#: views/form-post-box-actions.phtml:65
+msgid "Cross-link posts: %s"
+msgstr "Posts cross-linken: %s"
+
+#: views/form-post-box-actions.phtml:68
+msgid "Edit cross-link status"
+msgstr "Cross-link Status bearbeiten"
+
+#: views/form-post-box-linked.phtml:7
+msgid "View Medium post"
+msgstr "Medium-Post ansehen"
+
+#: views/form-post-box-linked.phtml:8
+msgid "Further edits to this entry will not be reflected on Medium."
+msgstr ""
+"Weitere Änderungen an diesem Eintrag werden nicht auf Medium reflektiert."
+
+#: views/form-user-profile.phtml:4
+msgid "Integration Token"
+msgstr "Integrations-Token"
+
+#: views/form-user-profile.phtml:11
+msgid "Connected to Medium as %s."
+msgstr "Zu Medium als %s verbunden."
+
+#: views/form-user-profile.phtml:14
+msgid "your Medium Settings"
+msgstr "Ihre Medium-Einstellungen"
+
+#: views/form-user-profile.phtml:16
+msgid "You can get this from the Integration Tokens section of %s."
+msgstr "Dies können Sie im Integrations-Token-Abschnitt von %s erhalten."
+
+#: views/form-user-profile.phtml:23
+msgid "Default cross-post status"
+msgstr "Voreinstellung für den Status von Cross-Posts"
+
+#: views/form-user-profile.phtml:35
+msgid ""
+"The default status to use when creating a post on Medium. Unlisted posts "
+"will not be indexed, nor distributed through Medium. Can be changed for each "
+"post."
+msgstr ""
+"Der für auf Medium erstellte Posts zu verwendende Status. Nicht aufgeführte "
+"Posts werden durch Medium weder indiziert noch verbreitet. Kann für jeden "
+"Post einzeln angepasst werden."
+
+#: views/form-user-profile.phtml:40
+msgid "Default cross-post license"
+msgstr "Voreinstellung für die Lizenz von Cross-Posts"
+
+#: views/form-user-profile.phtml:52
+msgid ""
+"The default license to use when creating a post on Medium. Does not display "
+"any license. information locally. Can be changed for each post."
+msgstr ""
+"Die für auf Medium erstellte Posts zu verwendende Lizenz. Zeigt lokal keine "
+"Lizenz-Informationen an. Kann für jeden Post einzeln angepasst werden."
+
+#: views/form-user-profile.phtml:57
+msgid "Default cross-link status"
+msgstr "Voreinstellung für den Status von Cross-Links"
+
+#: views/form-user-profile.phtml:69
+msgid ""
+"Whether or not to cross-link posts between this blog and Medium. When "
+"enabled adds a link to the bottom of both your local post, and the Medium "
+"post. Can be changed for each post."
+msgstr ""
+"Ob Cross-Links zwischen Posts auf diesem Blog und Medium erstellt werden "
+"sollen. Falls aktiviert wird ein Link am Ende Ihrer Posts hier als auch auf "
+"Medium eingefügt. Kann für jeden Post einzeln angepasst werden."
+
+#: views/notice-api-disabled.phtml:2
+msgid "The Medium API is temporarily disabled."
+msgstr "Die Medium-API ist zeitweilig deaktiviert."
+
+#: views/notice-connected.phtml:5
+msgid "Successfully connected to Medium as %s."
+msgstr "Erfolgreich als %s mit Medium verbunden."
+
+#: views/notice-invalid-token.phtml:5
+msgid "%s is not a valid Medium Integration token."
+msgstr "%s ist kein gültiges Medium Integrations-Token."
+
+#: views/notice-published.phtml:4
+msgid "View post"
+msgstr "Post ansehen"
+
+#. translators: 1: post status, 2: link to view post.
+#: views/notice-published.phtml:6
+msgid "%1$s post successfully created on Medium. %2$s."
+msgstr "Post (%1$s) erfolgreich auf Medium erstellt. %2$s."
+
+#. translators: 1: error notice, 2: message, 3: code.
+#: views/notice-something-wrong.phtml:5
+msgid "Medium Error:"
+msgstr "Fehler von Medium:"
+
+#: views/notice-something-wrong.phtml:6
+msgid "%1$s %2$s (%3$s)"
+msgstr "%1$s %2$s (%3$s)"
+
+#. Description of the plugin/theme
+msgid "Publish posts automatically from your blog to a Medium profile."
+msgstr "Veröffentlichen Sie Posts von Ihrem Blog auf Medium, ganz automatisch."
+
+#. Author of the plugin/theme
+msgid "A Medium Corporation"
+msgstr "A Medium Corporation"
+
+#. Author URI of the plugin/theme
+msgid "https://medium.com"
+msgstr "https://medium.com"
