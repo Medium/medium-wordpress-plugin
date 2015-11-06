@@ -279,31 +279,19 @@ class Medium_Admin {
     $data = json_encode($body);
 
     $headers = array(
-      "Authorization: Bearer " . $medium_user->token,
-      "Content-Type: application/json",
-      "Accept: application/json",
-      "Accept-Charset: utf-8",
-      "Content-Length: " . strlen($data)
+      "Authorization" => "Bearer " . $medium_user->token,
+      "Content-Type" => "application/json",
+      "Accept" => "application/json",
+      "Accept-Charset" => "utf-8"
     );
 
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => "https://api.medium.com/v1/users/" . $medium_user->id . "/posts",
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_HTTPHEADER => $headers,
-      CURLOPT_POST => true,
-      CURLOPT_POSTFIELDS => $data
+    $response = wp_remote_post("https://api.medium.com/v1/users/" . $medium_user->id . "/posts", array(
+      "headers" => $headers,
+      "body" => $data,
+      "user-agent" => "MonkeyMagic/1.0"
     ));
-    $result = curl_exec($curl);
-    curl_close($curl);
 
-    $payload = json_decode($result);
-    if ($payload->errors) {
-      $error = $payload->errors[0];
-      throw new Exception($error->message, $error->code);
-    }
-
-    return $payload->data;
+    return self::_handle_response($response);
   }
 
   /**
@@ -311,27 +299,17 @@ class Medium_Admin {
    */
   public static function get_medium_user_info($integration_token) {
     $headers = array(
-      "Authorization: Bearer " . $integration_token,
-      "Accept: application/json",
-      "Accept-Charset: utf-8"
+      "Authorization" => "Bearer " . $integration_token,
+      "Accept" => "application/json",
+      "Accept-Charset" => "utf-8"
     );
 
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-      CURLOPT_URL => "https://api.medium.com/v1/me",
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_HTTPHEADER => $headers
+    $response = wp_remote_get("https://api.medium.com/v1/me", array(
+      "headers" => $headers,
+      "user-agent" => "MonkeyMagic/1.0"
     ));
-    $result = curl_exec($curl);
-    curl_close($curl);
 
-    $payload = json_decode($result);
-    if ($payload->errors) {
-      $error = $payload->errors[0];
-      throw new Exception($error->message, $error->code);
-    }
-
-    return $payload->data;
+    return self::_handle_response($response);
   }
 
   // Data.
@@ -436,5 +414,32 @@ class Medium_Admin {
       $_SESSION["medium_notices"] = array();
     }
     $_SESSION["medium_notices"][$name] = $args;
+  }
+
+  // Requests
+
+  /**
+   * Handles the response from a remote request.
+   */
+  private static function _handle_response($response) {
+    $code = wp_remote_retrieve_response_code($response);
+    $content_type = wp_remote_retrieve_header($response, "content-type");
+    $body = wp_remote_retrieve_body($response);
+
+    if (is_wp_error($response)) {
+      throw new Exception($response->get_error_message(), 500);
+    }
+
+    if (false === strpos($content_type, "json")) {
+      throw new Exception(__("Unexpected response format.", "medium"), $code);
+    }
+
+    $payload = json_decode($body);
+    if (isset($payload->errors)) {
+      $error = $payload->errors[0];
+      throw new Exception($error->message, $error->code);
+    }
+
+    return $payload->data;
   }
 }

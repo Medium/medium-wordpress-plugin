@@ -1,12 +1,12 @@
 <?php
 /**
  * @package Medium
- * @version 1.0
+ * @version 1.0.1
  */
 /*
 Plugin Name: Medium
 Description: Publish posts automatically from your blog to a Medium profile.
-Version: 1.0
+Version: 1.0.1
 Author: A Medium Corporation
 Author URI: https://medium.com
 License: Apache
@@ -20,7 +20,7 @@ if (!function_exists("add_action")) {
   exit;
 }
 
-define("MEDIUM_VERSION", "1.0");
+define("MEDIUM_VERSION", "1.0.1");
 define("MEDIUM_PLUGIN_DIR", plugin_dir_path(__FILE__));
 define("MEDIUM_PLUGIN_URL", plugin_dir_url(__FILE__));
 
