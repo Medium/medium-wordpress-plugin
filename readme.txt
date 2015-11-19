@@ -36,7 +36,10 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
-= Medium 1.0.1 =
+= Medium 1.1 =
+* New: Publish a post directly into a publication.
+* New: Posts are sent to Medium with the same publish date as on WordPress.
+* New: Optionally prevent your Medium followers from being notified of the published post.
 * Fix: No longer show cross-links to Medium if you didn't want them. (Note to self: "no" is not falsey)
 * Change: Use WP's own remote request library to maximise compatibility with different server configurations.
 * i18n: German translation, contributed by https://github.com/lsinger

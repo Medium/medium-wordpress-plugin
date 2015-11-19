@@ -102,4 +102,36 @@ jQuery(document).ready(function($) {
     $("#medium-cross-link .edit-medium-cross-link").show().focus();
     event.preventDefault();
   });
+
+
+  // Handle Medium follower notification
+  $postMediumFollowerNotificationSelect = $("#post-medium-follower-notification-select");
+
+  $("#medium-follower-notification .edit-medium-follower-notification").click(function () {
+    if ($postMediumFollowerNotificationSelect.is(":hidden")) {
+      $("#medium-follower-notification-hidden").val($postMediumFollowerNotificationSelect.find("input:radio:checked").val())
+      $postMediumFollowerNotificationSelect.slideDown("fast", function() {
+        $postMediumFollowerNotificationSelect.find('input[type="radio"]')
+            .first().focus();
+      });
+      $(this).hide();
+    }
+    return false;
+  });
+
+  $postMediumFollowerNotificationSelect.find(".save-post-medium-follower-notification").click(function(event) {
+    $postMediumFollowerNotificationSelect.slideUp("fast");
+    $("#medium-follower-notification .edit-medium-follower-notification").show().focus();
+    $("#post-medium-follower-notification-display").html($postMediumFollowerNotificationSelect.find("input:radio:checked + label").html());
+    event.preventDefault();
+  });
+
+  $postMediumFollowerNotificationSelect.find(".cancel-post-medium-follower-notification").click(function(event) {
+    $postMediumFollowerNotificationSelect.slideUp("fast", function () {
+      $("#medium-follower-notification-radio-" + $("#medium-follower-notification-hidden").val()).prop("checked", true);
+    });
+    $("#medium-follower-notification .edit-medium-follower-notification").show().focus();
+    event.preventDefault();
+  });
+
 });

@@ -60,7 +60,7 @@
 
 <div class="misc-pub-section misc-pub-medium-cross-link <?php echo $data->options_visibility_class ?>">
 	<?php
-	$crossLinkSpan = '<b><span id="post-medium-cross-link-display">' . $data->medium_post_cross_link_options[$data->medium_post->cross_link] . "</span></b>";
+	$crossLinkSpan = '<b><span id="post-medium-cross-link-display">' . $data->medium_boolean_options[$data->medium_post->cross_link] . "</span></b>";
 	?>
 	<span id="medium-cross-link"><?php printf(__("Cross-link posts: %s", "medium"), $crossLinkSpan) ?>
 		<a href="#edit_medium_cross_link" class="edit-medium-cross-link hide-if-no-js">
@@ -72,16 +72,44 @@
 	<div id="post-medium-cross-link-select" class="hide-if-js">
 		<input type="hidden" id="medium-cross-link-hidden" value="<?php echo $data->medium_post->cross_link ?>" />
 		<?php
-		foreach ($data->medium_post_cross_link_options as $cross_link => $label) {
+		foreach ($data->medium_boolean_options as $boolean => $label) {
 			?>
-			<input type="radio" name="medium-cross-link" id="medium-cross-link-radio-<?php echo $cross_link ?>" value="<?php echo $cross_link ?>" <?php checked($data->medium_post->cross_link, $cross_link) ?> />
-			<label for="medium-cross-link-radio-<?php echo $cross_link ?>" class="selectit"><?php echo $label ?></label><br />
+			<input type="radio" name="medium-cross-link" id="medium-cross-link-radio-<?php echo $boolean ?>" value="<?php echo $boolean ?>" <?php checked($data->medium_post->cross_link, $boolean) ?> />
+			<label for="medium-cross-link-radio-<?php echo $boolean ?>" class="selectit"><?php echo $label ?></label><br />
 			<?php
 		}
 		?>
 		<p>
 		 <a href="#medium-cross-link" class="save-post-medium-cross-link hide-if-no-js button"><?php _e("OK", "medium"); ?></a>
 		 <a href="#medium-cross-link" class="cancel-post-medium-cross-link hide-if-no-js button-cancel"><?php _e("Cancel", "medium"); ?></a>
+		</p>
+	</div>
+</div>
+
+<div class="misc-pub-section misc-pub-medium-follower-notification <?php echo $data->options_visibility_class ?>">
+	<?php
+	$followerNotificationSpan = '<b><span id="post-medium-follower-notification-display">' . $data->medium_boolean_options[$data->medium_post->follower_notification] . "</span></b>";
+	?>
+	<span id="medium-follower-notification"><?php printf(__("Notify Medium followers: %s", "medium"), $followerNotificationSpan) ?>
+		<a href="#edit_medium_follower_notification" class="edit-medium-follower-notification hide-if-no-js">
+			<span aria-hidden="true"><?php _e("Edit", "medium") ?></span>
+			<span class="screen-reader-text"><?php _e("Edit follower notification", "medium") ?></span>
+		</a>
+	</span>
+
+	<div id="post-medium-follower-notification-select" class="hide-if-js">
+		<input type="hidden" id="medium-follower-notification-hidden" value="<?php echo $data->medium_post->follower_notification ?>" />
+		<?php
+		foreach ($data->medium_boolean_options as $boolean => $label) {
+			?>
+			<input type="radio" name="medium-follower-notification" id="medium-follower-notification-radio-<?php echo $boolean ?>" value="<?php echo $boolean ?>" <?php checked($data->medium_post->follower_notification, $boolean) ?> />
+			<label for="medium-follower-notification-radio-<?php echo $boolean ?>" class="selectit"><?php echo $label ?></label><br />
+			<?php
+		}
+		?>
+		<p>
+		 <a href="#medium-follower-notification" class="save-post-medium-follower-notification hide-if-no-js button"><?php _e("OK", "medium"); ?></a>
+		 <a href="#medium-follower-notification" class="cancel-post-medium-follower-notification hide-if-no-js button-cancel"><?php _e("Cancel", "medium"); ?></a>
 		</p>
 	</div>
 </div>

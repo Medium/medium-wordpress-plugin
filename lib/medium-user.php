@@ -6,9 +6,10 @@
  * Representation of a Medium user.
  */
 class Medium_User {
-  public $default_cross_link;
-  public $default_license;
-  public $default_status;
+  public $default_cross_link = "no";
+  public $default_follower_notification = "yes";
+  public $default_license = "all-rights-reserved";
+  public $default_status = "public";
   public $id;
   public $image_url;
   public $name;

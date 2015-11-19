@@ -116,7 +116,7 @@ class Medium_Admin {
     Medium_View::render("form-user-profile", array(
       "medium_post_statuses" => self::_get_post_statuses(),
       "medium_post_licenses" => self::_get_post_licenses(),
-      "medium_post_cross_link_options" => self::_get_post_cross_link_options(),
+      "medium_boolean_options" => self::_get_boolean_options(),
       "medium_user" => $medium_user
     ));
   }
@@ -152,6 +152,9 @@ class Medium_Admin {
     }
     if (isset($_REQUEST["medium-cross-link"])) {
       $medium_post->cross_link = $_REQUEST["medium-cross-link"];
+    }
+    if (isset($_REQUEST["medium-follower-notification"])) {
+      $medium_post->follower_notification = $_REQUEST["medium-follower-notification"];
     }
 
     // If the post isn't published, no need to do anything else.
@@ -226,6 +229,10 @@ class Medium_Admin {
         // Default to no cross-linking, per WordPress guidelines.
         $medium_post->cross_link = $medium_user->default_cross_link;
       }
+      if (!$medium_post->follower_notification) {
+        // Default to notifying Medium followers.
+        $medium_post->follower_notification = $medium_user->default_follower_notification;
+      }
       $options_visibility_class = $medium_post->status == "none" ? "hidden" : "";
       Medium_View::render("form-post-box-actions", array(
         "medium_post" => $medium_post,
@@ -233,7 +240,7 @@ class Medium_Admin {
         "medium_logo_url" => $medium_logo_url,
         "medium_post_statuses" => self::_get_post_statuses(),
         "medium_post_licenses" => self::_get_post_licenses(),
-        "medium_post_cross_link_options" => self::_get_post_cross_link_options(),
+        "medium_boolean_options" => self::_get_boolean_options(),
         "options_visibility_class" => $options_visibility_class
       ));
     } else {
@@ -274,7 +281,9 @@ class Medium_Admin {
       "contentFormat" => "html",
       "canonicalUrl" => $permalink,
       "license" => $medium_post->license,
-      "publishStatus" => $medium_post->status
+      "publishStatus" => $medium_post->status,
+      "publishedAt" => mysql2date('c', $post->post_date),
+      "notifyFollowers" => $medium_post->follower_notification == "yes"
     );
     $data = json_encode($body);
 
@@ -344,9 +353,9 @@ class Medium_Admin {
   }
 
   /**
-   * Returns an array of the valid post statuses.
+   * Returns an array of boolean options for cross-linking and follower notification.
    */
-  private static function _get_post_cross_link_options() {
+  private static function _get_boolean_options() {
     return array(
       "no" => __("No", "medium"),
       "yes" => __("Yes", "medium")
