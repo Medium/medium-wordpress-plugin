@@ -58,15 +58,32 @@
 		<td>
 			<select name="medium_default_post_cross_link" id="medium_default_post_cross_link">
 				<?php
-				foreach ($data->medium_post_cross_link_options as $cross_link => $label) {
+				foreach ($data->medium_boolean_options as $boolean => $label) {
 					?>
-					<option value="<?php echo $cross_link ?>" <?php selected($data->medium_user->default_cross_link, $cross_link) ?>><?php echo $label ?></option>
+					<option value="<?php echo $boolean ?>" <?php selected($data->medium_user->default_cross_link, $boolean) ?>><?php echo $label ?></option>
 					<?php
 				}
 				?>
 			</select>
 			<p class="description medium-wrapped">
 				<?php _e("Whether or not to cross-link posts between this blog and Medium. When enabled adds a link to the bottom of both your local post, and the Medium post. Can be changed for each post.", "medium"); ?>
+			</p>
+		</td>
+	</tr>
+	<tr>
+		<th><label for="medium_default_follower_notification"><?php _e("Default follower notification", "medium") ?></label></th>
+		<td>
+			<select name="medium_default_follower_notification" id="medium_default_follower_notification">
+				<?php
+				foreach ($data->medium_boolean_options as $boolean => $label) {
+					?>
+					<option value="<?php echo $boolean ?>" <?php selected($data->medium_user->default_follower_notification, $boolean) ?>><?php echo $label ?></option>
+					<?php
+				}
+				?>
+			</select>
+			<p class="description medium-wrapped">
+				<?php _e("Whether or not to notify your Medium followers when the post is sent to Medium. Can be changed for each post.", "medium"); ?>
 			</p>
 		</td>
 	</tr>

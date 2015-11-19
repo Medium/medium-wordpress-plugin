@@ -10,6 +10,7 @@ class Medium_Post {
   public $author_url;
   public $cross_link;
   public $id;
+  public $follower_notification;
   public $license;
   public $status;
   public $url;
