@@ -1,0 +1,8 @@
+<div class="error">
+	<p>
+		<?php
+		$tokenBlock = sprintf('<strong>%s</strong>', $data->token);
+		printf(__("%s does not have all the necessary permisions for this plugin. Please generate a new one on your Medium settings page.", "medium"), $tokenBlock);
+		?>
+	</p>
+</div>

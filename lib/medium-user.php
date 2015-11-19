@@ -9,10 +9,12 @@ class Medium_User {
   public $default_cross_link = "no";
   public $default_follower_notification = "yes";
   public $default_license = "all-rights-reserved";
+  public $default_publication_id = "";
   public $default_status = "public";
   public $id;
   public $image_url;
   public $name;
+  public $publications = array();
   public $token;
   public $url;
 

@@ -87,4 +87,28 @@
 			</p>
 		</td>
 	</tr>
+	<tr>
+		<th><label for="medium_default_publication_id"><?php _e("Default cross-post publication", "medium") ?></label></th>
+		<td>
+				<select name="medium_default_publication_id" id="medium_default_publication_id">
+					<?php
+						foreach ($data->medium_publication_options as $publication_id => $publication) {
+							?>
+							<option data-publishable="<?php echo $publication->publishable ?>" value="<?php echo $publication_id ?>" <?php selected($data->medium_user->default_publication_id, $publication_id) ?>><?php echo $publication->name ?></option>
+							<?php
+						}
+					?>
+				</select>
+				<?php
+				if ($data->medium_user->token) {
+					?>
+					<button type="button" id="medium-refresh-publications" class="button button-secondary hide-if-no-js">Refresh Publications</button>
+					<?php
+				}
+				?>
+			<p id="medium-publications-description" class="description medium-wrapped">
+				<?php _e("The publication on Medium to submit the post to. Can be changed for each post.", "medium"); ?>
+			</p>
+		</td>
+	</tr>
 </table>

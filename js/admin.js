@@ -20,16 +20,19 @@ jQuery(document).ready(function($) {
     $("#post-medium-status-display").html($postMediumStatusSelect.find("input:radio:checked + label").html());
     var status = $postMediumStatusSelect.find("input:radio:checked").val();
     $licenseDiv = $(".misc-pub-medium-license");
+    $crossLinkDiv = $(".misc-pub-medium-cross-link");
+    $followerNotificationDiv = $(".misc-pub-medium-follower-notification");
+    $publicationIdDiv = $(".misc-pub-medium-publication-id");
     if (status == "none") {
       $licenseDiv.addClass("hidden");
+      $crossLinkDiv.addClass("hidden");
+      $followerNotificationDiv.addClass("hidden");
+      $publicationIdDiv.addClass("hidden");
     } else {
       $licenseDiv.removeClass("hidden");
-    }
-    $crossLinkDiv = $(".misc-pub-medium-cross-link");
-    if (status == "none") {
-      $crossLinkDiv.addClass("hidden");
-    } else {
       $crossLinkDiv.removeClass("hidden");
+      $followerNotificationDiv.removeClass("hidden");
+      $publicationIdDiv.removeClass("hidden");
     }
     event.preventDefault();
   });
@@ -133,5 +136,100 @@ jQuery(document).ready(function($) {
     $("#medium-follower-notification .edit-medium-follower-notification").show().focus();
     event.preventDefault();
   });
+
+
+  // Handle publication selection
+  $postMediumPublicationIdSelect = $("#post-medium-publication-id-select");
+
+  $("#medium-publication-id .edit-medium-publication-id").click(function () {
+    if ($postMediumPublicationIdSelect.is(":hidden")) {
+      $("#medium-publication-id-hidden").val($postMediumPublicationIdSelect.find("input:radio:checked").val())
+      $postMediumPublicationIdSelect.slideDown("fast", function() {
+        $postMediumPublicationIdSelect.find('input[type="radio"]')
+            .first().focus();
+      });
+      $(this).hide();
+    }
+    return false;
+  });
+
+  $postMediumPublicationIdSelect.find(".save-post-medium-publication-id").click(function(event) {
+    $postMediumPublicationIdSelect.slideUp("fast");
+    $("#medium-publication-id .edit-medium-publication-id").show().focus();
+    $("#post-medium-publication-id-display").html($postMediumPublicationIdSelect.find("input:radio:checked + label").html());
+    var publishable = $postMediumPublicationIdSelect.find('input:radio:checked').data("publishable");
+    $publicStatusRadio = $postMediumStatusSelect.find('input:radio[value="public"]');
+    $unlistedStatusRadio = $postMediumStatusSelect.find('input:radio[value="unlisted"]');
+    if (publishable) {
+      $publicStatusRadio.removeAttr("disabled");
+      $unlistedStatusRadio.removeAttr("disabled");
+    } else {
+      $publicStatusRadio.attr("disabled", "disabled");
+      $unlistedStatusRadio.attr("disabled", "disabled");
+      if ($publicStatusRadio.prop("checked") || $unlistedStatusRadio.prop("checked")) {
+        $postMediumStatusSelect.find('input:radio[value="draft"]').prop("checked", true);
+        $("#post-medium-status-display").html($postMediumStatusSelect.find("input:radio:checked + label").html());
+      }
+    }
+    event.preventDefault();
+  });
+
+  $postMediumPublicationIdSelect.find(".cancel-post-medium-publication-id").click(function(event) {
+    $postMediumPublicationIdSelect.slideUp("fast", function () {
+      $("#medium-publication-id-radio-" + $("#medium-publication-id-hidden").val()).prop("checked", true);
+    });
+    $("#medium-publication-id .edit-medium-publication-id").show().focus();
+    event.preventDefault();
+  });
+
+
+  // Handle refreshing of publications.
+  $refreshPublicationsButton = $("#medium-refresh-publications");
+  $mediumPublicationsDescription = $("#medium-publications-description");
+  $mediumDefaultPublicationIdSelect = $("#medium_default_publication_id");
+
+  $refreshPublicationsButton.click(function(event) {
+    $refreshPublicationsButton.attr("disabled", "disabled");
+    $mediumDefaultPublicationIdSelect.attr("disabled", "disabled");
+
+    var data = {
+      "action": "medium_refresh_publications"
+    };
+
+    $.post(ajaxurl, data, function(response) {
+      $refreshPublicationsButton.removeAttr("disabled");
+      $mediumDefaultPublicationIdSelect.removeAttr("disabled");
+      var currentPublicationId = $mediumDefaultPublicationIdSelect.val();
+
+      var result = JSON.parse(response)
+      if (result.error) {
+        var error
+        switch (result.error.code) {
+          case 6002:
+            error = medium.errorMissingScope
+            break
+          default:
+            error = medium.errorUnknown.replace("%s", result.error.code)
+            break
+        }
+        alert(error);
+      } else {
+        $mediumDefaultPublicationIdSelect.find("option").each(function() {
+          $(this).remove();
+        });
+        for (var publicationId in result) {
+          var publication = result[publicationId]
+          $("<option/>").attr("value", publicationId).attr("data-publishable", publication.publishable).text(publication.name)
+            .appendTo($mediumDefaultPublicationIdSelect);
+        }
+        // Restore the selected option if possible.
+        if (!$mediumDefaultPublicationIdSelect.find('option[value="' + currentPublicationId + '"]').length) {
+          currentPublicationId = "";
+        }
+        $mediumDefaultPublicationIdSelect.val(currentPublicationId);
+      }
+    });
+    event.preventDefault();
+  })
 
 });
