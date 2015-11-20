@@ -3,8 +3,11 @@
 // Licensed under the Apache License, Version 2.0.
 
 require_once(MEDIUM_PLUGIN_DIR . "lib/medium-post.php");
+require_once(MEDIUM_PLUGIN_DIR . "lib/medium-publication.php");
 require_once(MEDIUM_PLUGIN_DIR . "lib/medium-user.php");
 require_once(MEDIUM_PLUGIN_DIR . "lib/medium-view.php");
+
+define("NO_PUBLICATION", -1);
 
 class Medium_Admin {
 
@@ -27,6 +30,7 @@ class Medium_Admin {
 
     add_action("personal_options_update", array("Medium_Admin", "personal_options_update"));
     add_action("edit_user_profile_update", array("Medium_Admin", "personal_options_update"));
+    add_action("wp_ajax_medium_refresh_publications", array("Medium_Admin", "refresh_publications"));
 
     add_action("add_meta_boxes_post", array("Medium_Admin", "add_meta_boxes_post"));
 
@@ -41,7 +45,13 @@ class Medium_Admin {
   public static function admin_init() {
     load_plugin_textdomain("medium");
 
-    wp_enqueue_script("medium_admin_js", MEDIUM_PLUGIN_URL . "js/admin.js", array(), MEDIUM_VERSION);
+    wp_register_script("medium_admin_js", MEDIUM_PLUGIN_URL . "js/admin.js");
+    wp_localize_script("medium_admin_js", "medium", array(
+    	"errorMissingScope" => __("An updated integration token is needed to perform this action. Please create a new integration token from your Medium settings page and set it on your WordPress profile above.", "medium"),
+      "errorUnknown" => __("An unknown error occurred (%s).", "medium")
+    ));
+    wp_enqueue_script("medium_admin_js");
+
     wp_enqueue_style("medium_admin_css", MEDIUM_PLUGIN_URL . "css/admin.css", array(), MEDIUM_VERSION);
   }
 
@@ -65,6 +75,8 @@ class Medium_Admin {
     $status = $_POST["medium_default_post_status"];
     $license = $_POST["medium_default_post_license"];
     $cross_link = $_POST["medium_default_post_cross_link"];
+    $follower_notification = $_POST["medium_default_follower_notification"];
+    $publication_id = $_POST["medium_default_publication_id"];
 
     $medium_user = Medium_User::get_by_wp_id($user_id);
 
@@ -80,16 +92,30 @@ class Medium_Admin {
       $medium_user->default_cross_link = $cross_link;
     }
 
+    if ($medium_user->default_follower_notification != $follower_notification) {
+      $medium_user->default_follower_notification = $follower_notification;
+    }
+
+    if ($medium_user->default_publication_id != $publication_id) {
+      $medium_user->default_publication_id = $publication_id;
+    }
+
     if (!$token) {
       $medium_user->id = "";
       $medium_user->image_url = "";
       $medium_user->name = "";
       $medium_user->token = "";
       $medium_user->url = "";
+      $medium_user->default_publication_id = "";
+      $medium_user->publications = array();
     } else if ($token != $medium_user->token) {
       try {
         // Check that the token is valid.
         $user = self::get_medium_user_info($token);
+
+        // Refresh the set of publications the user can contribute to.
+        $medium_user->publications = self::get_contributing_publications($token, $user->id);
+
         $medium_user->id = $user->id;
         $medium_user->image_url = $user->imageUrl;
         $medium_user->name = $user->name;
@@ -109,6 +135,25 @@ class Medium_Admin {
   }
 
   /**
+   * Handles the AJAX callback to refresh the publication list for a user.
+   */
+  public static function refresh_publications() {
+    global $current_user;
+    $medium_user = Medium_User::get_by_wp_id($current_user->ID);
+    try {
+      // Persist the publications for next time.
+      $medium_user->publications = self::get_contributing_publications($medium_user->token, $medium_user->id);
+      $medium_user->save($current_user->ID);
+
+      echo json_encode(self::_get_user_publication_options($medium_user));
+    } catch (Exception $e) {
+      echo self::_encode_ajax_error($e);
+    }
+
+    die();
+  }
+
+  /**
    * Adds Medium integration settings to the user profile.
    */
   public static function show_user_profile($user) {
@@ -117,6 +162,7 @@ class Medium_Admin {
       "medium_post_statuses" => self::_get_post_statuses(),
       "medium_post_licenses" => self::_get_post_licenses(),
       "medium_boolean_options" => self::_get_boolean_options(),
+      "medium_publication_options" => self::_get_user_publication_options($medium_user),
       "medium_user" => $medium_user
     ));
   }
@@ -155,6 +201,9 @@ class Medium_Admin {
     }
     if (isset($_REQUEST["medium-follower-notification"])) {
       $medium_post->follower_notification = $_REQUEST["medium-follower-notification"];
+    }
+    if (isset($_REQUEST["medium-publication-id"])) {
+      $medium_post->publication_id = $_REQUEST["medium-publication-id"];
     }
 
     // If the post isn't published, no need to do anything else.
@@ -218,12 +267,10 @@ class Medium_Admin {
         "medium_logo_url" => $medium_logo_url
       ));
     } else if ($medium_user->token && $medium_user->id) {
+
       // Can be connected.
       if (!$medium_post->license) {
         $medium_post->license = $medium_user->default_license;
-      }
-      if (!$medium_post->status) {
-        $medium_post->status = $medium_user->default_status;
       }
       if (!$medium_post->cross_link) {
         // Default to no cross-linking, per WordPress guidelines.
@@ -233,6 +280,21 @@ class Medium_Admin {
         // Default to notifying Medium followers.
         $medium_post->follower_notification = $medium_user->default_follower_notification;
       }
+      if (!$medium_post->publication_id) {
+        // Default to none.
+        $medium_post->publication_id = $medium_user->default_publication_id;
+      }
+
+      $publication_options = self::_get_user_publication_options($medium_user);
+      $publishable = $publication_options[$medium_post->publication_id]->publishable;
+
+      if (!$medium_post->status) {
+        $medium_post->status = $medium_user->default_status;
+      }
+      if (($medium_post->status == "unlisted" || $medium_post->status == "public") && !$publishable) {
+        $medium_post->status = "draft";
+      }
+
       $options_visibility_class = $medium_post->status == "none" ? "hidden" : "";
       Medium_View::render("form-post-box-actions", array(
         "medium_post" => $medium_post,
@@ -241,7 +303,9 @@ class Medium_Admin {
         "medium_post_statuses" => self::_get_post_statuses(),
         "medium_post_licenses" => self::_get_post_licenses(),
         "medium_boolean_options" => self::_get_boolean_options(),
-        "options_visibility_class" => $options_visibility_class
+        "medium_publication_options" => $publication_options,
+        "options_visibility_class" => $options_visibility_class,
+        "default_publication_publishable" => $publishable
       ));
     } else {
       // Needs token.
@@ -294,9 +358,72 @@ class Medium_Admin {
       "Accept-Charset" => "utf-8"
     );
 
-    $response = wp_remote_post("https://api.medium.com/v1/users/" . $medium_user->id . "/posts", array(
+    if ($medium_post->publication_id != NO_PUBLICATION) {
+      $path = "/publications/{$medium_post->publication_id}/posts";
+    } else {
+      $path = "/users/{$medium_user->id}/posts";
+    }
+
+    $response = wp_remote_post("https://api.medium.com/v1$path", array(
       "headers" => $headers,
       "body" => $data,
+      "user-agent" => "MonkeyMagic/1.0"
+    ));
+
+    return self::_handle_response($response);
+  }
+
+  /**
+   * Gets the publications that a user can contribute to.
+   */
+  public static function get_contributing_publications($integration_token, $medium_user_id) {
+    $publications = self::get_publications($integration_token, $medium_user_id);
+    $contributing_publications = array();
+    foreach ($publications as $publication) {
+      $contributors = self::get_publication_contributors($integration_token, $publication->id);
+      foreach ($contributors as $contributor) {
+        if ($contributor->userId == $medium_user_id) {
+          $contributing_publication = new Medium_Publication();
+          $contributing_publication->id = $publication->id;
+          $contributing_publication->image_url = $publication->imageUrl;
+          $contributing_publication->name = $publication->name;
+          $contributing_publication->description = $publication->description;
+          $contributing_publication->url = $publication->url;
+          $contributing_publication->role = $contributor->role;
+          $contributing_publications[$publication->id] = $contributing_publication;
+        }
+      }
+    }
+    return $contributing_publications;
+  }
+
+  /**
+   * Gets the user's publications on Medium.
+   */
+  public static function get_publications($integration_token, $medium_user_id) {
+    $headers = array(
+      "Authorization" => "Bearer " . $integration_token,
+      "Accept" => "application/json",
+      "Accept-Charset" => "utf-8"
+    );
+
+    $response = wp_remote_get("https://api.medium.com/v1/users/$medium_user_id/publications", array(
+      "headers" => $headers,
+      "user-agent" => "MonkeyMagic/1.0"
+    ));
+
+    return self::_handle_response($response);
+  }
+
+  public static function get_publication_contributors($integration_token, $publication_id) {
+    $headers = array(
+      "Authorization" => "Bearer " . $integration_token,
+      "Accept" => "application/json",
+      "Accept-Charset" => "utf-8"
+    );
+
+    $response = wp_remote_get("https://api.medium.com/v1/publications/$publication_id/contributors", array(
+      "headers" => $headers,
       "user-agent" => "MonkeyMagic/1.0"
     ));
 
@@ -362,6 +489,29 @@ class Medium_Admin {
     );
   }
 
+  /**
+   * Returns an array of the publications the supplied user can publish into.
+   */
+  private static function _get_user_publication_options(Medium_User $medium_user) {
+    $default_option = new stdClass();
+    $default_option->name = __("None", "medium");
+    $default_option->publishable = true;
+    $options[NO_PUBLICATION] = $default_option;
+
+    foreach ($medium_user->publications as $publication) {
+      if ($publication->role == "writer") {
+        $publication_name = sprintf(__("%s (Draft only)", "medium"), $publication->name);
+      } else {
+        $publication_name = $publication->name;
+      }
+      $option = new stdClass();
+      $option->name = $publication_name;
+      $option->publishable = $publication->role && ($publication->role != "writer");
+      $options[$publication->id] = $option;
+    }
+    return $options;
+  }
+
   // Feedback.
 
   /**
@@ -376,6 +526,9 @@ class Medium_Admin {
       case 6001:
       case 6003:
         $type = "invalid-token";
+        break;
+      case 6002:
+        $type = "missing-scope";
         break;
       case 6027:
         $type = "api-disabled";
@@ -423,6 +576,15 @@ class Medium_Admin {
       $_SESSION["medium_notices"] = array();
     }
     $_SESSION["medium_notices"][$name] = $args;
+  }
+
+  private static function _encode_ajax_error($e) {
+    return json_encode(array(
+      "error" => array(
+        "message" => $e->getMessage(),
+        "code" => $e->getCode()
+      )
+    ));
   }
 
   // Requests

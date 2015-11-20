@@ -12,6 +12,7 @@ class Medium_Post {
   public $id;
   public $follower_notification;
   public $license;
+  public $publication_id;
   public $status;
   public $url;
 

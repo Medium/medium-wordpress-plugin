@@ -17,8 +17,13 @@
 		<input type="hidden" id="medium-status-hidden" value="<?php echo $data->medium_post->status ?>" />
 		<?php
 		foreach ($data->medium_post_statuses as $status => $label) {
+			if (!$data->default_publication_publishable && ($status == "unlisted" || $status == "public")) {
+				$disabled = 'disabled="disabled"';
+			} else {
+				$disabled = "";
+			}
 			?>
-			<input type="radio" name="medium-status" id="medium-status-radio-<?php echo $status ?>" value="<?php echo $status ?>" <?php checked($data->medium_post->status, $status) ?> />
+			<input type="radio" <?php echo $disabled ?> name="medium-status" id="medium-status-radio-<?php echo $status ?>" value="<?php echo $status ?>" <?php checked($data->medium_post->status, $status) ?> />
 			<label for="medium-status-radio-<?php echo $status ?>" class="selectit"><?php echo $label ?></label><br />
 			<?php
 		}
@@ -110,6 +115,34 @@
 		<p>
 		 <a href="#medium-follower-notification" class="save-post-medium-follower-notification hide-if-no-js button"><?php _e("OK", "medium"); ?></a>
 		 <a href="#medium-follower-notification" class="cancel-post-medium-follower-notification hide-if-no-js button-cancel"><?php _e("Cancel", "medium"); ?></a>
+		</p>
+	</div>
+</div>
+
+<div class="misc-pub-section misc-pub-medium-publication-id <?php echo $data->options_visibility_class ?>">
+	<?php
+	$publicationIdSpan = '<b><span id="post-medium-publication-id-display">' . $data->medium_publication_options[$data->medium_post->publication_id]->name . "</span></b>";
+	?>
+	<span id="medium-publication-id"><?php printf(__("Create in publication: %s", "medium"), $publicationIdSpan) ?>
+		<a href="#edit_medium_publication_id" class="edit-medium-publication-id hide-if-no-js">
+			<span aria-hidden="true"><?php _e("Edit", "medium") ?></span>
+			<span class="screen-reader-text"><?php _e("Edit target publication", "medium") ?></span>
+		</a>
+	</span>
+
+	<div id="post-medium-publication-id-select" class="hide-if-js">
+		<input type="hidden" id="medium-publication-id-hidden" value="<?php echo $data->medium_post->publication_id ?>" />
+		<?php
+		foreach ($data->medium_publication_options as $publication_id => $publication) {
+			?>
+			<input type="radio" data-publishable="<?php echo $publication->publishable ?>" name="medium-publication-id" id="medium-publication-id-radio-<?php echo $publication_id ?>" value="<?php echo $publication_id ?>" <?php checked($data->medium_post->publication_id, $publication_id) ?> />
+			<label for="medium-publication-id-radio-<?php echo $publication_id ?>" class="selectit"><?php echo $publication->name ?></label><br />
+			<?php
+		}
+		?>
+		<p>
+		 <a href="#medium-publication-id" class="save-post-medium-publication-id hide-if-no-js button"><?php _e("OK", "medium"); ?></a>
+		 <a href="#medium-publication-id" class="cancel-post-medium-publication-id hide-if-no-js button-cancel"><?php _e("Cancel", "medium"); ?></a>
 		</p>
 	</div>
 </div>
