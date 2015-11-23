@@ -36,6 +36,10 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.1.1 =
+* Fixed: Missing publication Id for publishing after upgrade.
+* Fixed: Make upgrading safer if WordPress sandboxing doesn't catch activation errors.
+
 = Medium 1.1 =
 * New: Publish a post directly into a publication.
 * New: Posts are sent to Medium with the same publish date as on WordPress.

@@ -2,8 +2,8 @@
 // Copyright 2015 Medium
 // Licensed under the Apache License, Version 2.0.
 
-require_once(MEDIUM_PLUGIN_DIR . "lib/medium-post.php");
-require_once(MEDIUM_PLUGIN_DIR . "lib/medium-view.php");
+include_once(MEDIUM_PLUGIN_DIR . "lib/medium-post.php");
+include_once(MEDIUM_PLUGIN_DIR . "lib/medium-view.php");
 
 class Medium_Site {
 
