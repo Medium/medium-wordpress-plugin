@@ -2,10 +2,10 @@
 // Copyright 2015 Medium
 // Licensed under the Apache License, Version 2.0.
 
-require_once(MEDIUM_PLUGIN_DIR . "lib/medium-post.php");
-require_once(MEDIUM_PLUGIN_DIR . "lib/medium-publication.php");
-require_once(MEDIUM_PLUGIN_DIR . "lib/medium-user.php");
-require_once(MEDIUM_PLUGIN_DIR . "lib/medium-view.php");
+include_once(MEDIUM_PLUGIN_DIR . "lib/medium-post.php");
+include_once(MEDIUM_PLUGIN_DIR . "lib/medium-publication.php");
+include_once(MEDIUM_PLUGIN_DIR . "lib/medium-user.php");
+include_once(MEDIUM_PLUGIN_DIR . "lib/medium-view.php");
 
 define("NO_PUBLICATION", -1);
 
@@ -282,7 +282,7 @@ class Medium_Admin {
       }
       if (!$medium_post->publication_id) {
         // Default to none.
-        $medium_post->publication_id = $medium_user->default_publication_id;
+        $medium_post->publication_id = $medium_user->default_publication_id ?: NO_PUBLICATION;
       }
 
       $publication_options = self::_get_user_publication_options($medium_user);
