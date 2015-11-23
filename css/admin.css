@@ -24,3 +24,24 @@
 .medium-wrapped {
   width: 500px;
 }
+#medium-migration-progress-bar {
+  height: 30px;
+  width: 100%;
+  margin: 10px 0;
+  background: #ddd;
+  overflow: hidden;
+  position: relative;
+}
+#medium-migration-progress {
+  background: #00ab6b;
+  width: 0;
+  height: 30px;
+}
+#medium-migration-progress-label {
+  height: 30px;
+  width: 100%;
+  text-align: center;
+  margin: 5px;
+  z-index: 2;
+  position: absolute;
+}

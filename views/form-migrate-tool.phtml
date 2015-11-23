@@ -1,0 +1,126 @@
+<div class="card">
+  <h3 class="title"><?php _e("Migrate to Medium", "medium") ?></h3>
+  <p><?php _e("Use this migration tool to cross-post all posts on this site to a Medium publication.") ?></p>
+	<p><?php _e("Migrated posts will not be distributed to users, and will use their original post date as the post date on Medium.") ?></p>
+	<p><?php _e("Migrated posts will not be cross-linked on either site.") ?></p>
+  <?php
+  if (!$data->medium_publication_options) {
+    ?>
+    <strong><?php _e("You must be the editor of at least one Medium publication to use this feature."); ?></strong>
+    <?php
+  } else {
+    ?>
+    <table class="form-table">
+      <tr>
+        <th><label for="medium-migrate-publication-id"><?php _e("Publication", "medium") ?></label></th>
+        <td>
+          <select name="medium-migrate-publication-id" id="medium-migrate-publication-id">
+            <?php
+            foreach ($data->medium_publication_options as $publication_id => $publication_name) {
+              ?>
+              <option value="<?php echo $publication_id ?>" <?php selected($data->migration->strategy->medium_publication_id, $publication_id) ?>><?php echo $publication_name ?></option>
+              <?php
+            }
+            ?>
+          </select>
+          <p class="description medium-card-wrapped">
+            <?php _e("The publication on Medium to submit the migrated posts to.", "medium"); ?>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="medium-migrate-post-status"><?php _e("Cross-post status", "medium") ?></label></th>
+        <td>
+          <select name="medium-migrate-post-status" id="medium-migrate-post-status">
+            <?php
+            foreach ($data->medium_post_statuses as $status => $label) {
+              ?>
+              <option value="<?php echo $status ?>" <?php selected($data->migration->strategy->medium_post_status, $status) ?>><?php echo $label ?></option>
+              <?php
+            }
+            ?>
+          </select>
+          <p class="description medium-card-wrapped">
+            <?php _e("The status to use for migrated posts. If an author is not an Editor of the publication, will fallback to Draft.", "medium"); ?>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="medium-migrate-post-license"><?php _e("Cross-post license", "medium") ?></label></th>
+        <td>
+          <select name="medium-migrate-post-license" id="medium-migrate-post-license">
+            <?php
+            foreach ($data->medium_post_licenses as $license => $label) {
+              ?>
+              <option value="<?php echo $license ?>" <?php selected($data->migration->strategy->medium_post_license, $license) ?>><?php echo $label ?></option>
+              <?php
+            }
+            ?>
+          </select>
+          <p class="description medium-card-wrapped">
+            <?php _e("The license to use for migrated posts.", "medium"); ?>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <th><label for="medium-migrate-fallback-user"><?php _e("Fallback user account", "medium") ?></label></th>
+        <td>
+          <select name="medium-migrate-fallback-user" id="medium-migrate-fallback-user">
+            <?php
+            foreach ($data->fallback_accounts as $medium_user_id => $name) {
+              ?>
+              <option value="<?php echo $medium_user_id ?>" <?php selected($data->migration->strategy->fallback_medium_user_id, $medium_user_id) ?>><?php echo $name ?></option>
+              <?php
+            }
+            ?>
+          </select>
+          <p class="description">
+            <?php _e("The account to use for posts by authors who have no integration token set.", "medium"); ?>
+          </p>
+        </td>
+      </tr>
+    </table>
+    <button type="button" id="medium-prepare-migration" class="button button-secondary <?php echo $data->migration->prepare_visibility_class ?>"><?php _e("Prepare") ?></button>
+    <div id="medium-execute-migration" class="<?php echo $data->migration->execute_visibility_class ?>">
+      <h3 class="title"><?php _e("Progress", "medium") ?></h3>
+      <?php
+      $totalStrong = sprintf('<strong class="medium-migration-total-count">%d</strong>', $data->migration->progress->total);
+      printf(__("%s post(s) queued for migration.", "medium"), $totalStrong);
+      ?>
+      <br>
+      <?php
+      $connectedStrong = sprintf('<strong id="medium-migration-connected-count">%d</strong>', $data->migration->progress->connected);
+      printf(__("%s post(s) from connected authors.", "medium"), $connectedStrong);
+      ?>
+      <br>
+      <?php
+      $fallbackStrong = sprintf('<strong id="medium-migration-fallback-count">%d</strong>', $data->migration->progress->fallback);
+      printf(__("%s post(s) will use the fallback account.", "medium"), $fallbackStrong);
+      ?>
+      <br>
+      <?php
+      $publicStrong = sprintf('<strong id="medium-migration-public-count">%d</strong>', $data->migration->progress->public);
+      printf(__("%s post(s) will be created as public.", "medium"), $publicStrong);
+      ?>
+      <br>
+      <?php
+      $unlistedStrong = sprintf('<strong id="medium-migration-unlisted-count">%d</strong>', $data->migration->progress->unlisted);
+      printf(__("%s post(s) will be created as unlisted.", "medium"), $unlistedStrong);
+      ?>
+      <br>
+      <?php
+      $draftStrong = sprintf('<strong id="medium-migration-draft-count">%d</strong>', $data->migration->progress->draft);
+      printf(__("%s post(s) will be created as drafts.", "medium"), $draftStrong);
+      ?>
+      <div id="medium-migration-progress-bar" data-total="<?php echo $data->migration->progress->total ?>">
+        <div id="medium-migration-progress-label"><strong id="medium-migration-completed-count"><?php echo $data->migration->progress->completed ?></strong>/<strong class="medium-migration-total-count"><?php echo $data->migration->progress->total ?></strong></div>
+        <div id="medium-migration-progress" data-completed="<?php echo $data->migration->progress->completed ?>"></div>
+      </div>
+      <button type="button" id="medium-start-migration" class="button button-secondary <?php echo $data->migration->run_visibility_class ?>"><?php _e("Migrate") ?></button>
+      <button type="button" id="medium-stop-migration" class="button button-secondary <?php echo $data->migration->run_visibility_class ?>"><?php _e("Cancel") ?></button>
+    </div>
+    <button type="button" id="medium-reset-migration" class="button button-secondary <?php echo $data->migration->reset_visibility_class ?>"><?php _e("Reset") ?></button>
+    <?php
+  }
+  ?>
+</div>

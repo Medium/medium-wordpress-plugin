@@ -8,6 +8,7 @@
 class Medium_Post {
   public $author_image_url;
   public $author_url;
+  public $byline;
   public $cross_link;
   public $id;
   public $follower_notification;

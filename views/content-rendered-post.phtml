@@ -1,5 +1,12 @@
 <h1><?php echo $data->title ?></h1>
 <?php
+if ($data->byline) {
+	?>
+	<p>
+		<em><?php printf(__("by %s.", "medium"), $data->byline); ?></em>
+	</p>
+	<?php
+}
 echo $data->content;
 if ($data->cross_link) {
 	?>
