@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
   // Handle Medium Status
-  $postMediumStatusSelect = $("#post-medium-status-select");
+  var $postMediumStatusSelect = $("#post-medium-status-select");
 
   $("#medium-status .edit-medium-status").click(function () {
     if ($postMediumStatusSelect.is(":hidden")) {
@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
   });
 
   // Handle Medium License
-  $postMediumLicenseSelect = $("#post-medium-license-select");
+  var $postMediumLicenseSelect = $("#post-medium-license-select");
 
   $("#medium-license .edit-medium-license").click(function () {
     if ($postMediumLicenseSelect.is(":hidden")) {
@@ -77,7 +77,7 @@ jQuery(document).ready(function($) {
 
 
   // Handle Medium Cross-link
-  $postMediumCrossLinkSelect = $("#post-medium-cross-link-select");
+  var $postMediumCrossLinkSelect = $("#post-medium-cross-link-select");
 
   $("#medium-cross-link .edit-medium-cross-link").click(function () {
     if ($postMediumCrossLinkSelect.is(":hidden")) {
@@ -108,7 +108,7 @@ jQuery(document).ready(function($) {
 
 
   // Handle Medium follower notification
-  $postMediumFollowerNotificationSelect = $("#post-medium-follower-notification-select");
+  var $postMediumFollowerNotificationSelect = $("#post-medium-follower-notification-select");
 
   $("#medium-follower-notification .edit-medium-follower-notification").click(function () {
     if ($postMediumFollowerNotificationSelect.is(":hidden")) {
@@ -139,7 +139,7 @@ jQuery(document).ready(function($) {
 
 
   // Handle publication selection
-  $postMediumPublicationIdSelect = $("#post-medium-publication-id-select");
+  var $postMediumPublicationIdSelect = $("#post-medium-publication-id-select");
 
   $("#medium-publication-id .edit-medium-publication-id").click(function () {
     if ($postMediumPublicationIdSelect.is(":hidden")) {
@@ -158,8 +158,8 @@ jQuery(document).ready(function($) {
     $("#medium-publication-id .edit-medium-publication-id").show().focus();
     $("#post-medium-publication-id-display").html($postMediumPublicationIdSelect.find("input:radio:checked + label").html());
     var publishable = $postMediumPublicationIdSelect.find('input:radio:checked').data("publishable");
-    $publicStatusRadio = $postMediumStatusSelect.find('input:radio[value="public"]');
-    $unlistedStatusRadio = $postMediumStatusSelect.find('input:radio[value="unlisted"]');
+    var $publicStatusRadio = $postMediumStatusSelect.find('input:radio[value="public"]');
+    var $unlistedStatusRadio = $postMediumStatusSelect.find('input:radio[value="unlisted"]');
     if (publishable) {
       $publicStatusRadio.removeAttr("disabled");
       $unlistedStatusRadio.removeAttr("disabled");
@@ -184,9 +184,9 @@ jQuery(document).ready(function($) {
 
 
   // Handle refreshing of publications.
-  $refreshPublicationsButton = $("#medium-refresh-publications");
-  $mediumPublicationsDescription = $("#medium-publications-description");
-  $mediumDefaultPublicationIdSelect = $("#medium_default_publication_id");
+  var $refreshPublicationsButton = $("#medium-refresh-publications");
+  var $mediumPublicationsDescription = $("#medium-publications-description");
+  var $mediumDefaultPublicationIdSelect = $("#medium_default_publication_id");
 
   $refreshPublicationsButton.click(function(event) {
     $refreshPublicationsButton.attr("disabled", "disabled");
