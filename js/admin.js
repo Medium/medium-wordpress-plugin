@@ -193,7 +193,8 @@ jQuery(document).ready(function($) {
     $mediumDefaultPublicationIdSelect.attr("disabled", "disabled");
 
     var data = {
-      "action": "medium_refresh_publications"
+      "action": "medium_refresh_publications",
+      "user_id": $refreshPublicationsButton.data("user-id")
     };
 
     $.post(ajaxurl, data, function(response) {
