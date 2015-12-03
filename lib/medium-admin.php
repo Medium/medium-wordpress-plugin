@@ -13,6 +13,10 @@ class Medium_Admin {
 
   private static $_initialised = false;
 
+  private static $_migration_table = "";
+
+  private static $_medium_api_host = "https://api.medium.com";
+
   /**
    * Initialises actions and filters.
    */
@@ -24,13 +28,18 @@ class Medium_Admin {
 
     add_action("admin_init", array("Medium_Admin", "admin_init"));
     add_action("admin_notices", array("Medium_Admin", "admin_notices"));
+    add_action("tool_box", array("Medium_Admin", "tool_box"));
 
     add_action("show_user_profile", array("Medium_Admin", "show_user_profile"));
     add_action("edit_user_profile", array("Medium_Admin", "show_user_profile"));
 
     add_action("personal_options_update", array("Medium_Admin", "personal_options_update"));
     add_action("edit_user_profile_update", array("Medium_Admin", "personal_options_update"));
+
     add_action("wp_ajax_medium_refresh_publications", array("Medium_Admin", "refresh_publications"));
+    add_action("wp_ajax_medium_prepare_migration", array("Medium_Admin", "prepare_migration"));
+    add_action("wp_ajax_medium_run_migration", array("Medium_Admin", "run_migration"));
+    add_action("wp_ajax_medium_reset_migration", array("Medium_Admin", "reset_migration"));
 
     add_action("add_meta_boxes_post", array("Medium_Admin", "add_meta_boxes_post"));
 
@@ -43,6 +52,7 @@ class Medium_Admin {
    * Initialises admin functionality.
    */
   public static function admin_init() {
+    global $wpdb;
     load_plugin_textdomain("medium");
 
     wp_register_script("medium_admin_js", MEDIUM_PLUGIN_URL . "js/admin.js");
@@ -53,6 +63,8 @@ class Medium_Admin {
     wp_enqueue_script("medium_admin_js");
 
     wp_enqueue_style("medium_admin_css", MEDIUM_PLUGIN_URL . "css/admin.css", array(), MEDIUM_VERSION);
+
+    self::$_migration_table = $wpdb->prefix . "medium_migration";
   }
 
   /**
@@ -64,6 +76,59 @@ class Medium_Admin {
       Medium_View::render("notice-$name", $args);
     }
     $_SESSION["medium_notices"] = array();
+  }
+
+  /**
+   * Adds migration tools to the tool box
+   */
+  public static function tool_box() {
+    global $current_user;
+    global $wpdb;
+
+    self::_ensure_migration_table();
+
+    $medium_user = Medium_User::get_by_wp_id($current_user->ID);
+    if (!$medium_user->publications && $medium_user->token) {
+      try {
+        // Refresh the set of publications the user can contribute to.
+        $medium_user->publications = self::get_contributing_publications($medium_user->token, $medium_user->id);
+        $medium_user->save($current_user->ID);
+      } catch (Exception $e) {
+        self::_add_api_error_notice($e, $medium_user->token);
+      }
+    }
+
+    $migration_data = self::_get_migration_data();
+    $migration_data->reset_visibility_class = "hidden";
+    $migration_data->run_visibility_class = "";
+    if ($migration_data->progress->total) {
+      $migration_data->prepare_visibility_class = "hidden";
+      $migration_data->execute_visibility_class = "";
+      if ($migration_data->progress->total == $migration_data->progress->completed) {
+        $migration_data->reset_visibility_class = "";
+        $migration_data->run_visibility_class = "hidden";
+      }
+    } else {
+      $migration_data->prepare_visibility_class = "";
+      $migration_data->execute_visibility_class = "hidden";
+    }
+
+    if ($migration_data->strategy->fallback_user_id) {
+      $fallback_medium_user = Medium_User::get_by_wp_id($migration_data->strategy->fallback_user_id);
+      $migration_data->strategy->fallback_medium_user_id = $fallback_medium_user->id;
+    } else {
+      $migration_data->strategy->fallback_medium_user_id = "";
+    }
+
+    $user_integration_data = self::_get_user_integration_data();
+    Medium_View::render("form-migrate-tool", array(
+      "medium_post_statuses" => self::_get_post_statuses(false),
+      "medium_post_licenses" => self::_get_post_licenses(),
+      "medium_boolean_options" => self::_get_boolean_options(),
+      "medium_publication_options" => self::_get_migrate_publication_options($medium_user),
+      "fallback_accounts" => $user_integration_data->linked_accounts,
+      "migration" => $migration_data,
+    ));
   }
 
   /**
@@ -106,6 +171,7 @@ class Medium_Admin {
       $medium_user->name = "";
       $medium_user->token = "";
       $medium_user->url = "";
+      $medium_user->username = "";
       $medium_user->default_publication_id = "";
       $medium_user->publications = array();
     } else if ($token != $medium_user->token) {
@@ -121,6 +187,7 @@ class Medium_Admin {
         $medium_user->name = $user->name;
         $medium_user->token = $token;
         $medium_user->url = $user->url;
+        $medium_user->username = $user->username;
 
         self::_add_notice("connected", array(
           "user" => $user
@@ -149,8 +216,219 @@ class Medium_Admin {
     } catch (Exception $e) {
       echo self::_encode_ajax_error($e);
     }
-
     die();
+  }
+
+  /**
+   * Handles the AJAX callback to prepare a migration.
+   */
+  public static function prepare_migration() {
+    global $wpdb;
+    $publication_id = $_POST['publication_id'];
+    $post_status = $_POST['post_status'];
+    $post_license = $_POST['post_license'];
+    $fallback_medium_user_id = $_POST['fallback_medium_user_id'];
+
+    if (!$fallback_medium_user_id) {
+      echo self::_encode_ajax_error(new Exception("Fallback user must be specified", -1));
+      die();
+    }
+
+    // Get the medium user data for all users.
+    $connected_users = $wpdb->get_results("
+      SELECT u.ID as user_id, um.meta_value as medium_user
+      FROM $wpdb->users AS u
+      INNER JOIN $wpdb->usermeta AS um
+      ON u.ID = um.user_id
+      WHERE um.meta_key = 'medium_user'
+    ");
+
+    $editor_user_ids = array();
+    $writer_user_ids = array();
+    $fallback_status = "";
+    foreach ($connected_users as $connected_user) {
+      $medium_user = unserialize($connected_user->medium_user);
+      if ($medium_user->publications && array_key_exists($publication_id, $medium_user->publications)) {
+        if ($medium_user->publications[$publication_id]->role == "writer") {
+          $writer_user_ids[] = $connected_user->user_id;
+          if ($medium_user->id == $fallback_medium_user_id) {
+            $fallback_status = "draft";
+            $fallback_user_id = $connected_user->user_id;
+          }
+        } else {
+          $editor_user_ids[] = $connected_user->user_id;
+          if ($medium_user->id == $fallback_medium_user_id) {
+            $fallback_status = $post_status;
+            $fallback_user_id = $connected_user->user_id;
+          }
+        }
+      }
+    }
+
+    if (!$fallback_status) {
+      echo self::_encode_ajax_error(new Exception("Fallback user must be an editor or writer for the publication", -1));
+      die();
+    }
+
+    // Get the post meta data for all posts.
+    $posts = $wpdb->get_results("
+      SELECT p.ID AS post_id, p.post_author, pm.medium_post
+      FROM $wpdb->posts AS p
+      LEFT JOIN (
+        SELECT post_id, meta_value AS medium_post
+        FROM $wpdb->postmeta
+        WHERE meta_key = 'medium_post'
+      ) AS pm
+      ON p.ID = pm.post_id
+      WHERE p.post_type = 'post'
+      AND p.post_status = 'publish'
+    ");
+
+    $connected_count = 0;
+    $fallback_count = 0;
+    $statuses = array(
+      "unlisted" => 0,
+      "draft" => 0,
+      "public" => 0
+    );
+    $rows = [];
+
+    // Define a header row that describes the migration strategy.
+    $rows[] = "(0, $fallback_user_id, '$publication_id', '$post_status', '$post_license', 0)";
+
+    foreach ($posts as $post) {
+      if ($post->medium_post) {
+        $medium_post = unserialize($post->medium_post);
+
+        // If it already has an id, this post has already been migrated.
+        if ($medium_post->id) continue;
+      }
+
+      $fallback = 0;
+      if (in_array($post->post_author, $editor_user_ids)) {
+        // Post author is an editor of the publication. Use the requested post status.
+        $migration_status = $post_status;
+        $connected_count++;
+      } else if (in_array($post->post_author, $writer_user_ids)) {
+        $migration_status = "draft";
+        $connected_count++;
+      } else {
+        $migration_status = $fallback_status;
+        $fallback = 1;
+        $fallback_count++;
+      }
+      $statuses[$migration_status]++;
+
+      $rows[] = "({$post->post_id}, {$post->post_author}, '$publication_id', '$migration_status', '$post_license', $fallback)";
+    }
+
+    $values = implode(",", $rows);
+    $table = self::$_migration_table;
+
+    // Prepare the migration table.
+    $wpdb->query("TRUNCATE TABLE $table");
+
+    // Write the prepared data to the migration table.
+    $wpdb->query("
+      INSERT INTO $table
+        (post_id, user_id, medium_publication_id, medium_post_status, medium_post_license, fallback)
+      VALUES $values
+    ");
+
+    echo json_encode(array(
+      "fallbackCount" => $fallback_count,
+      "connectedCount" => $connected_count,
+      "statuses" => $statuses
+    ));
+    die();
+  }
+
+  /**
+   * Performs the migration.
+   */
+  public static function run_migration() {
+    global $wpdb;
+    $table = self::$_migration_table;
+
+    $migrations = $wpdb->get_results("
+      SELECT *
+      FROM $table
+      WHERE post_id != 0
+      AND medium_post_id IS NULL
+      LIMIT 10
+    ");
+
+    $fallback = $wpdb->get_row("
+      SELECT *
+      FROM $table
+      WHERE post_id = 0
+    ");
+
+    $medium_users_by_wp_id = array();
+    $fallback_medium_user = Medium_User::get_by_wp_id($fallback->user_id);
+    $medium_users_by_wp_id[$fallback->user_id] = $fallback_medium_user;
+
+    foreach ($migrations as $migration) {
+      $post = get_post($migration->post_id);
+      $user = get_userdata($migration->user_id);
+
+      $medium_post = Medium_Post::get_by_wp_id($migration->post_id);
+      $medium_post->status = $migration->medium_post_status;
+      $medium_post->license = $migration->medium_post_license;
+      $medium_post->publication_id = $migration->medium_publication_id;
+      $medium_post->cross_link = "no";
+      $medium_post->follower_notification = "no";
+      if ($migration->fallback) {
+        $medium_post->byline = $user->display_name;
+        $medium_user = $fallback_medium_user;
+      } else {
+        if (!array_key_exists($migration->user_id, $medium_users_by_wp_id)) {
+          $medium_users_by_wp_id[$migration->user_id] = Medium_User::get_by_wp_id($migration->user_id);
+        }
+        $medium_user = $medium_users_by_wp_id[$migration->user_id];
+      }
+
+      try {
+        $created_medium_post = self::cross_post($post, $medium_post, $medium_user);
+
+        if ($migration->fallback) {
+          // TODO(jamie) Make a call to the claim API.
+        }
+
+      } catch (Exception $e) {
+        echo self::_encode_ajax_error($e);
+        die();
+      }
+
+      // Save the newly migrated post data.
+      $medium_post->id = $created_medium_post->id;
+      $medium_post->url = $created_medium_post->url;
+      $medium_post->author_image_url = $medium_user->image_url;
+      $medium_post->author_url = $medium_user->url;
+      $medium_post->save($migration->post_id);
+
+      // Mark this post as migrated.
+      $wpdb->query("
+        UPDATE $table
+        SET medium_post_id = '{$medium_post->id}'
+        WHERE post_id = {$migration->post_id}
+      ");
+    }
+
+    echo json_encode(array(
+      "migrated" => count($migrations)
+    ));
+    die();
+  }
+
+  /**
+   * Drops migration data.
+   */
+  public static function reset_migration() {
+    global $wpdb;
+    $table = self::$_migration_table;
+
+    $wpdb->query("TRUNCATE TABLE $table");
   }
 
   /**
@@ -282,7 +560,7 @@ class Medium_Admin {
       }
       if (!$medium_post->publication_id) {
         // Default to none.
-        $medium_post->publication_id = $medium_user->default_publication_id ?: NO_PUBLICATION;
+        $medium_post->publication_id = $medium_user->default_publication_id ? $medium_user->default_publication_id : NO_PUBLICATION;
       }
 
       $publication_options = self::_get_user_publication_options($medium_user);
@@ -315,64 +593,6 @@ class Medium_Admin {
     }
   }
 
-  // API calls.
-
-  /**
-   * Creates a post on Medium.
-   */
-  public static function cross_post($post, $medium_post, $medium_user) {
-    $tag_data = wp_get_post_tags($post->ID);
-    $tags = array();
-    foreach ($tag_data as $tag) {
-      if ($tag->taxonomy == "post_tag") {
-        $tags[] = $tag->name;
-      }
-    }
-
-    $permalink = get_permalink($post->ID);
-    $content = Medium_View::render("content-rendered-post", array(
-      "title" => $post->post_title,
-      "content" => self::_prepare_content($post),
-      "cross_link" => $medium_post->cross_link == "yes",
-      "site_name" => get_bloginfo('name'),
-      "permalink" => $permalink
-    ), true);
-
-    $body = array(
-      "title" => $post->post_title,
-      "content" => $content,
-      "tags" => $tags,
-      "contentFormat" => "html",
-      "canonicalUrl" => $permalink,
-      "license" => $medium_post->license,
-      "publishStatus" => $medium_post->status,
-      "publishedAt" => mysql2date('c', $post->post_date),
-      "notifyFollowers" => $medium_post->follower_notification == "yes"
-    );
-    $data = json_encode($body);
-
-    $headers = array(
-      "Authorization" => "Bearer " . $medium_user->token,
-      "Content-Type" => "application/json",
-      "Accept" => "application/json",
-      "Accept-Charset" => "utf-8"
-    );
-
-    if ($medium_post->publication_id != NO_PUBLICATION) {
-      $path = "/publications/{$medium_post->publication_id}/posts";
-    } else {
-      $path = "/users/{$medium_user->id}/posts";
-    }
-
-    $response = wp_remote_post("https://api.medium.com/v1$path", array(
-      "headers" => $headers,
-      "body" => $data,
-      "user-agent" => "MonkeyMagic/1.0"
-    ));
-
-    return self::_handle_response($response);
-  }
-
   /**
    * Gets the publications that a user can contribute to.
    */
@@ -398,68 +618,220 @@ class Medium_Admin {
   }
 
   /**
+   * Returns information on the integration status of user accounts.
+   */
+  private static function _get_user_integration_data() {
+    global $wpdb;
+    $user_integrations = $wpdb->get_results("
+      SELECT u.ID as user_id, u.display_name AS name, um.medium_user
+      FROM $wpdb->users AS u
+      LEFT JOIN (
+        SELECT user_id, meta_value AS medium_user FROM $wpdb->usermeta AS um
+        WHERE um.meta_key = 'medium_user'
+      ) AS um
+      ON u.ID = um.user_id
+    ");
+
+    $unlinked_accounts = array();
+    $linked_accounts = array();
+    foreach ($user_integrations as $user_integration) {
+      if ($user_integration->medium_user) {
+        $migration_user = unserialize($user_integration->medium_user);
+        if ($migration_user->token) {
+          $linked_accounts[$migration_user->id] = $user_integration->name . ' (@' . $migration_user->username . ')';
+          continue;
+        }
+      }
+      $unlinked_accounts[$user_integration->user_id] = $user_integration->name;
+    }
+
+    $result = new stdClass();
+    $result->unlinked_accounts = $unlinked_accounts;
+    $result->linked_accounts = $linked_accounts;
+
+    return $result;
+  }
+
+  /**
+   * Ensures that the migration table exists.
+   */
+  private static function _ensure_migration_table() {
+    global $wpdb;
+    $charset_collate = $wpdb->get_charset_collate();
+    $table = self::$_migration_table;
+
+    // Create the migration table if necessary.
+    $wpdb->query("
+      CREATE TABLE IF NOT EXISTS $table (
+        post_id bigint(20) unsigned NOT NULL,
+        user_id bigint(20) unsigned NOT NULL,
+        medium_publication_id varchar(32) NOT NULL,
+        medium_post_status varchar(32) NOT NULL,
+        medium_post_license varchar(32) NOT NULL,
+        medium_post_id varchar(32) NULL,
+        fallback tinyint NOT NULL,
+        PRIMARY KEY  (post_id, user_id),
+        KEY medium_post_id (medium_post_id)
+      ) $charset_collate
+    ");
+  }
+
+  /**
+   * Returns information on current migration progress
+   */
+  private static function _get_migration_data() {
+    global $wpdb;
+    $table = self::$_migration_table;
+
+    $migration = new stdClass();
+
+    // Retrive progress data.
+    $migration->progress = $wpdb->get_row("
+      SELECT SUM(CASE WHEN medium_post_id IS NULL THEN 0 ELSE 1 END) AS completed,
+        SUM(CASE WHEN medium_post_status = 'draft' THEN 1 ELSE 0 END) AS draft,
+        SUM(CASE WHEN medium_post_status = 'unlisted' THEN 1 ELSE 0 END) AS unlisted,
+        SUM(CASE WHEN medium_post_status = 'public' THEN 1 ELSE 0 END) AS public,
+        SUM(CASE WHEN fallback = 1 THEN 1 ELSE 0 END) AS fallback,
+        SUM(CASE WHEN fallback = 0 THEN 1 ELSE 0 END) AS connected,
+        COUNT(*) AS total
+      FROM $table
+      WHERE post_id != 0
+    ");
+
+    // Retrieve the migration strategy data.
+    $strategy_data = $wpdb->get_row("
+      SELECT user_id AS fallback_user_id, medium_publication_id, medium_post_status, medium_post_license
+      FROM $table
+      WHERE post_id = 0;
+    ");
+    if (!$strategy_data) {
+      $strategy_data = new stdClass();
+      $strategy_data->fallback_user_id = "";
+      $strategy_data->medium_publication_id = "";
+      $strategy_data->medium_post_status = "";
+      $strategy_data->medium_post_license = "";
+    }
+    $migration->strategy = $strategy_data;
+
+    return $migration;
+  }
+
+  // API calls.
+
+  /**
+   * Creates a post on Medium.
+   */
+  public static function cross_post($post, $medium_post, $medium_user) {
+    $tag_data = wp_get_post_tags($post->ID);
+    $tags = array();
+    foreach ($tag_data as $tag) {
+      if ($tag->taxonomy == "post_tag") {
+        $tags[] = $tag->name;
+      }
+    }
+
+    $permalink = get_permalink($post->ID);
+    $content = Medium_View::render("content-rendered-post", array(
+      "title" => $post->post_title,
+      "content" => self::_prepare_content($post),
+      "cross_link" => $medium_post->cross_link == "yes",
+      "site_name" => get_bloginfo('name'),
+      "permalink" => $permalink,
+      "byline" => $medium_post->byline
+    ), true);
+
+    $body = array(
+      "title" => $post->post_title,
+      "content" => $content,
+      "tags" => $tags,
+      "contentFormat" => "html",
+      "canonicalUrl" => $permalink,
+      "license" => $medium_post->license,
+      "publishStatus" => $medium_post->status,
+      "publishedAt" => mysql2date('c', $post->post_date),
+      "notifyFollowers" => $medium_post->follower_notification == "yes"
+    );
+    $data = json_encode($body);
+
+    if ($medium_post->publication_id != NO_PUBLICATION) {
+      $path = "/v1/publications/{$medium_post->publication_id}/posts";
+    } else {
+      $path = "/v1/users/{$medium_user->id}/posts";
+    }
+
+
+    return self::_medium_request("POST", $path, $medium_user->token, $data, array(
+      "Content-Type" => "application/json"
+    ));
+  }
+
+  /**
    * Gets the user's publications on Medium.
    */
   public static function get_publications($integration_token, $medium_user_id) {
-    $headers = array(
-      "Authorization" => "Bearer " . $integration_token,
-      "Accept" => "application/json",
-      "Accept-Charset" => "utf-8"
-    );
-
-    $response = wp_remote_get("https://api.medium.com/v1/users/$medium_user_id/publications", array(
-      "headers" => $headers,
-      "user-agent" => "MonkeyMagic/1.0"
-    ));
-
-    return self::_handle_response($response);
+    return self::_medium_request("GET", "/v1/users/$medium_user_id/publications", $integration_token);
   }
 
+  /**
+   * Gets a publication's contributors.
+   */
   public static function get_publication_contributors($integration_token, $publication_id) {
-    $headers = array(
-      "Authorization" => "Bearer " . $integration_token,
-      "Accept" => "application/json",
-      "Accept-Charset" => "utf-8"
-    );
-
-    $response = wp_remote_get("https://api.medium.com/v1/publications/$publication_id/contributors", array(
-      "headers" => $headers,
-      "user-agent" => "MonkeyMagic/1.0"
-    ));
-
-    return self::_handle_response($response);
+    return self::_medium_request("GET", "/v1/publications/$publication_id/contributors", $integration_token);
   }
 
   /**
    * Gets the Medium user's profile information.
    */
   public static function get_medium_user_info($integration_token) {
-    $headers = array(
+    return self::_medium_request("GET", "/v1/me", $integration_token);
+  }
+
+  /**
+   * Makes a request to Medium's API.
+   */
+  private static function _medium_request($method, $path, $integration_token, $body = "", $additional_headers = array()) {
+    $headers = array_merge(array(
       "Authorization" => "Bearer " . $integration_token,
       "Accept" => "application/json",
       "Accept-Charset" => "utf-8"
-    );
+    ), $additional_headers);
 
-    $response = wp_remote_get("https://api.medium.com/v1/me", array(
+    $payload = array(
       "headers" => $headers,
       "user-agent" => "MonkeyMagic/1.0"
-    ));
+    );
+    $url = self::$_medium_api_host . $path;
+
+    if ($method == "POST") {
+      $payload["body"] = $body;
+      $response = wp_remote_post($url, $payload);
+    } elseif ($method = "GET") {
+      $response = wp_remote_get($url, $payload);
+    } else {
+      throw new Exception(__("Invalid method specified.", "medium"));
+    }
 
     return self::_handle_response($response);
   }
+
 
   // Data.
 
   /**
    * Returns an array of the valid post statuses.
    */
-  private static function _get_post_statuses() {
-    return array(
-      "none" => __("None", "medium"),
+  private static function _get_post_statuses($include_none = true) {
+    $options = array(
       "public" => __("Public", "medium"),
       "draft" => __("Draft", "medium"),
       "unlisted" => __("Unlisted", "medium")
     );
+    if ($include_none) {
+      $options = array_merge(array(
+        "none" => __("None", "medium")
+      ), $options);
+    }
+    return $options;
   }
 
   /**
@@ -487,6 +859,17 @@ class Medium_Admin {
       "no" => __("No", "medium"),
       "yes" => __("Yes", "medium")
     );
+  }
+
+  /**
+   * Returns an array of publications that are valid migration targets.
+   */
+  private static function _get_migrate_publication_options(Medium_User $medium_user) {
+    $options = array();
+    foreach ($medium_user->publications as $publication) {
+      $options[$publication->id] = $publication->name;
+    }
+    return $options;
   }
 
   /**

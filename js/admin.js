@@ -157,7 +157,7 @@ jQuery(document).ready(function($) {
     $postMediumPublicationIdSelect.slideUp("fast");
     $("#medium-publication-id .edit-medium-publication-id").show().focus();
     $("#post-medium-publication-id-display").html($postMediumPublicationIdSelect.find("input:radio:checked + label").html());
-    var publishable = $postMediumPublicationIdSelect.find('input:radio:checked').data("publishable");
+    var publishable = $postMediumPublicationIdSelect.find("input:radio:checked").data("publishable");
     var $publicStatusRadio = $postMediumStatusSelect.find('input:radio[value="public"]');
     var $unlistedStatusRadio = $postMediumStatusSelect.find('input:radio[value="unlisted"]');
     if (publishable) {
@@ -209,7 +209,7 @@ jQuery(document).ready(function($) {
             error = medium.errorMissingScope
             break
           default:
-            error = medium.errorUnknown.replace("%s", result.error.code)
+          error = medium.errorUnknown.replace("%s", result.error.code + " - " + result.error.message);
             break
         }
         alert(error);
@@ -232,4 +232,160 @@ jQuery(document).ready(function($) {
     event.preventDefault();
   })
 
+
+  // Handle migration of posts.
+  var $prepareMigrationButton = $("#medium-prepare-migration");
+  var $startMigrationButton = $("#medium-start-migration");
+  var $stopMigrationButton = $("#medium-stop-migration");
+  var $resetMigrationButton = $("#medium-reset-migration");
+  var $executeMigrationDiv = $("#medium-execute-migration");
+
+  var $migratePublicationIdSelect = $("#medium-migrate-publication-id");
+  var $migratePostStatusSelect = $("#medium-migrate-post-status");
+  var $migratePostLicenseSelect = $("#medium-migrate-post-license");
+  var $migrateFallbackUserSelect = $("#medium-migrate-fallback-user");
+  var $migrationProgressBarDiv = $("#medium-migration-progress-bar");
+  var $migrationProgressDiv = $("#medium-migration-progress");
+  var $migrationTotalCountStrong = $(".medium-migration-total-count");
+  var $migrationCompletedCountStrong = $("#medium-migration-completed-count");
+  var $migrationConnectedCountStrong = $("#medium-migration-connected-count");
+  var $migrationFallbackCountStrong = $("#medium-migration-fallback-count");
+  var $migrationPublicCountStrong = $("#medium-migration-public-count");
+  var $migrationUnlistedCountStrong = $("#medium-migration-unlisted-count");
+  var $migrationDraftCountStrong = $("#medium-migration-draft-count");
+
+  function resetMigration() {
+    $prepareMigrationButton.removeClass("hidden");
+    $executeMigrationDiv.addClass("hidden");
+  }
+
+  function showMigrationProgress(callback) {
+    var progress = $migrationProgressDiv.data("completed") / $migrationProgressBarDiv.data("total");
+    var width = $migrationProgressBarDiv.width() * progress;
+    return $migrationProgressDiv.stop().animate({
+      width: width
+    }, 250, "swing", callback);
+  }
+
+  function toggleMigrationOptionsLock(locked) {
+    $migratePublicationIdSelect.attr("disabled", locked);
+    $migratePostStatusSelect.attr("disabled", locked);
+    $migratePostLicenseSelect.attr("disabled", locked);
+    $migrateFallbackUserSelect.attr("disabled", locked);
+  }
+
+  $migratePublicationIdSelect.change(resetMigration);
+  $migratePostStatusSelect.change(resetMigration);
+  $migratePostLicenseSelect.change(resetMigration);
+  $migrateFallbackUserSelect.change(resetMigration);
+
+  $prepareMigrationButton.click(function(event) {
+    var data = {
+      "action": "medium_prepare_migration",
+      "publication_id": $migratePublicationIdSelect.val(),
+      "post_status": $migratePostStatusSelect.val(),
+      "post_license": $migratePostLicenseSelect.val(),
+      "fallback_medium_user_id": $migrateFallbackUserSelect.val()
+    };
+
+    $.post(ajaxurl, data, function(response) {
+      var result = JSON.parse(response)
+      if (result.error) {
+        var error
+        switch (result.error.code) {
+          default:
+            error = medium.errorUnknown.replace("%s", result.error.code + " - " + result.error.message);
+            break;
+        }
+        alert(error);
+      } else {
+        var totalCount = result.fallbackCount + result.connectedCount;
+        $migrationTotalCountStrong.html(totalCount);
+        $migrationCompletedCountStrong.html(0);
+        $migrationConnectedCountStrong.html(result.connectedCount);
+        $migrationFallbackCountStrong.html(result.fallbackCount);
+        $migrationPublicCountStrong.html(result.statuses.public);
+        $migrationUnlistedCountStrong.html(result.statuses.unlisted);
+        $migrationDraftCountStrong.html(result.statuses.draft);
+        $migrationProgressDiv.data("completed", 0)
+        $migrationProgressBarDiv.data("total", totalCount);
+        showMigrationProgress();
+
+        $prepareMigrationButton.addClass("hidden");
+        $executeMigrationDiv.removeClass("hidden");
+      }
+    });
+    event.preventDefault();
+  })
+
+  $startMigrationButton.click(function (event) {
+    // Lock migration options.
+    toggleMigrationOptionsLock(true);
+
+    // Begin the migration.
+    runMigration();
+  })
+
+  var migrationCancelled = false;
+
+  function runMigration() {
+    migrationCancelled = false;
+    var data = {
+      "action": "medium_run_migration"
+    }
+
+    $.post(ajaxurl, data, function (response) {
+      var result = JSON.parse(response);
+      if (result.error) {
+        var error
+        switch (result.error.code) {
+          default:
+            error = medium.errorUnknown.replace("%s", result.error.code + " - " + result.error.message);
+            break;
+        }
+        migrationCancelled = true;
+        toggleMigrationOptionsLock(false);
+        alert(error);
+      } else {
+        if (result.migrated) {
+          var completed = result.migrated + $migrationProgressDiv.data('completed');
+          $migrationCompletedCountStrong.html(completed);
+          $migrationProgressDiv.data('completed', completed);
+
+          showMigrationProgress(function () {
+            // Run the next batch once the progress bar has updated.
+            if (!migrationCancelled) {
+              setTimeout(runMigration, 0);
+            }
+          });
+        } else {
+          toggleMigrationOptionsLock(false);
+          $startMigrationButton.addClass("hidden");
+          $stopMigrationButton.addClass("hidden");
+          $resetMigrationButton.removeClass("hidden");
+        }
+      }
+    });
+  }
+
+  $stopMigrationButton.click(function (event) {
+    toggleMigrationOptionsLock(false);
+    migrationCancelled = true;
+  })
+
+  $resetMigrationButton.click(function (event) {
+    var data = {
+      "action": "medium_reset_migration"
+    }
+
+    $.post(ajaxurl, data, function (response) {
+      $resetMigrationButton.addClass("hidden");
+      $startMigrationButton.removeClass("hidden");
+      $stopMigrationButton.removeClass("hidden");
+      $prepareMigrationButton.removeClass("hidden");
+      $executeMigrationDiv.addClass("hidden");
+    });
+  })
+
+  showMigrationProgress();
 });

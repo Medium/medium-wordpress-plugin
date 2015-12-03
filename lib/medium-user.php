@@ -17,6 +17,7 @@ class Medium_User {
   public $publications = array();
   public $token;
   public $url;
+  public $username;
 
   /**
    * Gets the Medium user associated with the supplied user Id.
