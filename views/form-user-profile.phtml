@@ -102,7 +102,7 @@
 				<?php
 				if ($data->medium_user->token) {
 					?>
-					<button type="button" id="medium-refresh-publications" class="button button-secondary hide-if-no-js">Refresh Publications</button>
+					<button type="button" data-user-id="<?php echo $data->user_id ?>" id="medium-refresh-publications" class="button button-secondary hide-if-no-js"><?php _e("Refresh Publications", "medium") ?></button>
 					<?php
 				}
 				?>

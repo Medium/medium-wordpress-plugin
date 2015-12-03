@@ -205,12 +205,17 @@ class Medium_Admin {
    * Handles the AJAX callback to refresh the publication list for a user.
    */
   public static function refresh_publications() {
-    global $current_user;
-    $medium_user = Medium_User::get_by_wp_id($current_user->ID);
+    $user_id = $_POST['user_id'];
+    if (!current_user_can("edit_user", $user_id)) {
+      echo self::_encode_ajax_error(new Exception("You don't have permission to manage this user.", -1));
+      die();
+    }
+
+    $medium_user = Medium_User::get_by_wp_id($user_id);
     try {
       // Persist the publications for next time.
       $medium_user->publications = self::get_contributing_publications($medium_user->token, $medium_user->id);
-      $medium_user->save($current_user->ID);
+      $medium_user->save($user_id);
 
       echo json_encode(self::_get_user_publication_options($medium_user));
     } catch (Exception $e) {
@@ -441,7 +446,8 @@ class Medium_Admin {
       "medium_post_licenses" => self::_get_post_licenses(),
       "medium_boolean_options" => self::_get_boolean_options(),
       "medium_publication_options" => self::_get_user_publication_options($medium_user),
-      "medium_user" => $medium_user
+      "medium_user" => $medium_user,
+      "user_id" => $user->ID
     ));
   }
 
