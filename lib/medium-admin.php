@@ -355,7 +355,7 @@ class Medium_Admin {
       FROM $table
       WHERE post_id != 0
       AND medium_post_id IS NULL
-      LIMIT 10
+      LIMIT 5
     ");
 
     $fallback = $wpdb->get_row("
@@ -722,13 +722,18 @@ class Medium_Admin {
    * Creates a post on Medium.
    */
   public static function cross_post($post, $medium_post, $medium_user) {
-    $tag_data = wp_get_post_tags($post->ID);
+    $tag_data = wp_get_post_terms($post->ID, array("post_tag", "slug"));
     $tags = array();
     foreach ($tag_data as $tag) {
       if ($tag->taxonomy == "post_tag") {
         $tags[] = $tag->name;
+      } elseif ($tag->taxonomy == "slug") {
+        // For installations that have the custom taxonomy "slug", ensure that
+        // these are are the head of the tag list.
+        array_unshift($tags, $tag->name);
       }
     }
+    $tags = array_unique($tags);
 
     $permalink = get_permalink($post->ID);
     $content = Medium_View::render("content-rendered-post", array(
