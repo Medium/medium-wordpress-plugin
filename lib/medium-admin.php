@@ -384,7 +384,8 @@ class Medium_Admin {
       $medium_post->cross_link = "no";
       $medium_post->follower_notification = "no";
       if ($migration->fallback) {
-        $medium_post->byline = $user->display_name;
+        $medium_post->byline_name = $user->display_name;
+        $medium_post->byline_email = $user->user_email;
         $medium_user = $fallback_medium_user;
       } else {
         if (!array_key_exists($migration->user_id, $medium_users_by_wp_id)) {
@@ -395,10 +396,6 @@ class Medium_Admin {
 
       try {
         $created_medium_post = self::cross_post($post, $medium_post, $medium_user);
-
-        if ($migration->fallback) {
-          // TODO(jamie) Make a call to the claim API.
-        }
 
       } catch (Exception $e) {
         echo self::_encode_ajax_error($e);
@@ -741,6 +738,16 @@ class Medium_Admin {
     }
     $tags = array_unique($tags);
 
+    if (class_exists('CoAuthors_Guest_Authors')) {
+      // Handle guest-authors if the CoAuthors Plus plugin is installed.
+      $coauthors = get_coauthors($post->ID);
+      $primary_author = $coauthors[0];
+      if ($primary_author->type == "guest-author") {
+        $medium_post->byline_name = $primary_author->display_name;
+        $medium_post->byline_email = $primary_author->user_email;
+      }
+    }
+
     $permalink = get_permalink($post->ID);
     $content = Medium_View::render("content-rendered-post", array(
       "title" => $post->post_title,
@@ -748,7 +755,7 @@ class Medium_Admin {
       "cross_link" => $medium_post->cross_link == "yes",
       "site_name" => get_bloginfo('name'),
       "permalink" => $permalink,
-      "byline" => $medium_post->byline
+      "byline" => $medium_post->byline_name
     ), true);
 
     $body = array(
@@ -770,8 +777,28 @@ class Medium_Admin {
       $path = "/v1/users/{$medium_user->id}/posts";
     }
 
+    $created_medium_post = self::_medium_request("POST", $path, $medium_user->token, $data, array(
+      "Content-Type" => "application/json"
+    ));
 
-    return self::_medium_request("POST", $path, $medium_user->token, $data, array(
+    if ($medium_post->byline_email) {
+      // Create a claim for the post, if necessary.
+      self::create_post_claim($medium_post, $medium_user, $medium_post->byline_email);
+    }
+
+    return $created_medium_post;
+  }
+
+  /**
+   * Creates a post claim for the original author of a post.
+   */
+  public static function create_post_claim(Medium_Post $medium_post, Medium_User $medium_user, $email) {
+    $body = array(
+      "md5" => md5(strtolower($email))
+    );
+    $data = json_encode($body);
+
+    return self::_medium_request("PUT", "/v1/posts/{$medium_post->id}/author", $medium_user->token, $data, array(
       "Content-Type" => "application/json"
     ));
   }
@@ -796,35 +823,6 @@ class Medium_Admin {
   public static function get_medium_user_info($integration_token) {
     return self::_medium_request("GET", "/v1/me", $integration_token);
   }
-
-  /**
-   * Makes a request to Medium's API.
-   */
-  private static function _medium_request($method, $path, $integration_token, $body = "", $additional_headers = array()) {
-    $headers = array_merge(array(
-      "Authorization" => "Bearer " . $integration_token,
-      "Accept" => "application/json",
-      "Accept-Charset" => "utf-8"
-    ), $additional_headers);
-
-    $payload = array(
-      "headers" => $headers,
-      "user-agent" => "MonkeyMagic/1.0"
-    );
-    $url = self::$_medium_api_host . $path;
-
-    if ($method == "POST") {
-      $payload["body"] = $body;
-      $response = wp_remote_post($url, $payload);
-    } elseif ($method = "GET") {
-      $response = wp_remote_get($url, $payload);
-    } else {
-      throw new Exception(__("Invalid method specified.", "medium"));
-    }
-
-    return self::_handle_response($response);
-  }
-
 
   // Data.
 
@@ -982,6 +980,37 @@ class Medium_Admin {
   }
 
   // Requests
+
+  /**
+   * Makes a request to Medium's API.
+   */
+  private static function _medium_request($method, $path, $integration_token, $body = "", $additional_headers = array()) {
+    $headers = array_merge(array(
+      "Authorization" => "Bearer " . $integration_token,
+      "Accept" => "application/json",
+      "Accept-Charset" => "utf-8"
+    ), $additional_headers);
+
+    $payload = array(
+      "headers" => $headers,
+      "user-agent" => "MonkeyMagic/1.0"
+    );
+    $url = self::$_medium_api_host . $path;
+
+    if ($method == "POST") {
+      $payload["body"] = $body;
+      $response = wp_remote_post($url, $payload);
+    } elseif ($method == "GET") {
+      $response = wp_remote_get($url, $payload);
+    } elseif ($method == "PUT") {
+      $payload["method"] = "PUT";
+      $response = wp_remote_request($url, $payload);
+    } else {
+      throw new Exception(__("Invalid method specified.", "medium"));
+    }
+
+    return self::_handle_response($response);
+  }
 
   /**
    * Handles the response from a remote request.
