@@ -273,6 +273,7 @@ jQuery(document).ready(function($) {
     $migratePostStatusSelect.attr("disabled", locked);
     $migratePostLicenseSelect.attr("disabled", locked);
     $migrateFallbackUserSelect.attr("disabled", locked);
+    $startMigrationButton.attr("disabled", locked);
   }
 
   $migratePublicationIdSelect.change(resetMigration);
