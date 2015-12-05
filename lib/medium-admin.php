@@ -780,6 +780,7 @@ class Medium_Admin {
     $created_medium_post = self::_medium_request("POST", $path, $medium_user->token, $data, array(
       "Content-Type" => "application/json"
     ));
+    $medium_post->id = $created_medium_post->id;
 
     if ($medium_post->byline_email) {
       // Create a claim for the post, if necessary.
@@ -797,7 +798,7 @@ class Medium_Admin {
       "md5" => md5(strtolower($email))
     );
     $data = json_encode($body);
-
+    error_log("Create post claim for $medium_post->ID: $data");
     return self::_medium_request("PUT", "/v1/posts/{$medium_post->id}/author", $medium_user->token, $data, array(
       "Content-Type" => "application/json"
     ));
@@ -1004,6 +1005,7 @@ class Medium_Admin {
       $response = wp_remote_get($url, $payload);
     } elseif ($method == "PUT") {
       $payload["method"] = "PUT";
+      $payload["body"] = $body;
       $response = wp_remote_request($url, $payload);
     } else {
       throw new Exception(__("Invalid method specified.", "medium"));
