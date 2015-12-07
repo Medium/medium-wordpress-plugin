@@ -739,16 +739,17 @@ class Medium_Admin {
   public static function cross_post($post, $medium_post, $medium_user) {
     $tag_data = wp_get_post_terms($post->ID, array("post_tag", "slug"));
     $tags = array();
+    $slugs = array();
     foreach ($tag_data as $tag) {
       if ($tag->taxonomy == "post_tag") {
         $tags[] = $tag->name;
       } elseif ($tag->taxonomy == "slug") {
         // For installations that have the custom taxonomy "slug", ensure that
         // these are are the head of the tag list.
-        array_unshift($tags, $tag->name);
+        $slugs[] = $tag->name;
       }
     }
-    $tags = array_unique($tags);
+    $tags = array_unique(array_merge($slugs, $tags));
 
     if (class_exists('CoAuthors_Guest_Authors')) {
       // Handle guest-authors if the CoAuthors Plus plugin is installed.
