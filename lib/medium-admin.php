@@ -949,7 +949,7 @@ class Medium_Admin {
    */
   private static function _prepare_content($post) {
     // Add paragraph tags.
-    $post_content = wpautop($post->post_content);
+    $post_content = do_shortcode(wpautop($post->post_content));
 
     // Best effort. Regex parsing of HTML is a bad idea, generally, but including
     // a full parser just for this case is over the top. This will match things
