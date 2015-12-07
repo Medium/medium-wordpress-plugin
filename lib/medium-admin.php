@@ -415,6 +415,18 @@ class Medium_Admin {
         SET medium_post_id = '{$medium_post->id}'
         WHERE post_id = {$migration->post_id}
       ");
+
+      // Do this last so that we count the post as migrated, but still fail
+      // for debugging purposes
+      try {
+        if ($medium_post->byline_email) {
+          // Create a claim for the post, if necessary.
+          self::create_post_claim($medium_post, $medium_user, $medium_post->byline_email);
+        }
+      } catch (Exception $e) {
+        echo self::_encode_ajax_error($e);
+        die();
+      }
     }
 
     echo json_encode(array(
@@ -782,11 +794,6 @@ class Medium_Admin {
     ));
     $medium_post->id = $created_medium_post->id;
 
-    if ($medium_post->byline_email) {
-      // Create a claim for the post, if necessary.
-      self::create_post_claim($medium_post, $medium_user, $medium_post->byline_email);
-    }
-
     return $created_medium_post;
   }
 
@@ -798,7 +805,6 @@ class Medium_Admin {
       "md5" => md5(strtolower($email))
     );
     $data = json_encode($body);
-    error_log("Create post claim for $medium_post->ID: $data");
     return self::_medium_request("PUT", "/v1/posts/{$medium_post->id}/author", $medium_user->token, $data, array(
       "Content-Type" => "application/json"
     ));
@@ -998,6 +1004,7 @@ class Medium_Admin {
     );
     $url = self::$_medium_api_host . $path;
 
+    error_log("Making request $method $url: $body");
     if ($method == "POST") {
       $payload["body"] = $body;
       $response = wp_remote_post($url, $payload);
@@ -1030,9 +1037,11 @@ class Medium_Admin {
       throw new Exception(__("Unexpected response format.", "medium"), $code);
     }
 
+    error_log("Received payload: $body");
     $payload = json_decode($body);
     if (isset($payload->errors)) {
       $error = $payload->errors[0];
+      error_log("Received API error: $error->message ($error->code)");
       throw new Exception($error->message, $error->code);
     }
 
