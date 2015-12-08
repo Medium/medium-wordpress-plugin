@@ -737,7 +737,7 @@ class Medium_Admin {
         $slugs[] = $tag->name;
       }
     }
-    $tags = array_unique(array_merge($slugs, $tags));
+    $tags = array_values(array_unique(array_merge($slugs, $tags)));
 
     if (class_exists('CoAuthors_Guest_Authors')) {
       // Handle guest-authors if the CoAuthors Plus plugin is installed.
