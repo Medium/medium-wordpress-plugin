@@ -296,7 +296,7 @@ class Medium_Admin {
       "draft" => 0,
       "public" => 0
     );
-    $rows = [];
+    $rows = array();
 
     // Define a header row that describes the migration strategy.
     $rows[] = "(0, $fallback_user_id, '$publication_id', '$post_status', '$post_license', 0)";
