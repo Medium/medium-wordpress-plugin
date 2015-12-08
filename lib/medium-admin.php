@@ -415,18 +415,6 @@ class Medium_Admin {
         SET medium_post_id = '{$medium_post->id}'
         WHERE post_id = {$migration->post_id}
       ");
-
-      // Do this last so that we count the post as migrated, but still fail
-      // for debugging purposes
-      try {
-        if ($medium_post->byline_email) {
-          // Create a claim for the post, if necessary.
-          self::create_post_claim($medium_post, $medium_user, $medium_post->byline_email);
-        }
-      } catch (Exception $e) {
-        echo self::_encode_ajax_error($e);
-        die();
-      }
     }
 
     echo json_encode(array(
@@ -790,10 +778,33 @@ class Medium_Admin {
       $path = "/v1/users/{$medium_user->id}/posts";
     }
 
-    $created_medium_post = self::_medium_request("POST", $path, $medium_user->token, $data, array(
-      "Content-Type" => "application/json"
-    ));
+    try {
+      $created_medium_post = self::_medium_request("POST", $path, $medium_user->token, $data, array(
+        "Content-Type" => "application/json"
+      ));
+    } catch (Exception $e) {
+      // Retry once if we got a timeout
+      if ($e->getCode() == -2) {
+        error_log("RETRYING POST $post->ID '$post->post_title' due to timeout, delaying...");
+        sleep(5);
+        $created_medium_post = self::_medium_request("POST", $path, $medium_user->token, $data, array(
+          "Content-Type" => "application/json"
+        ));
+      } else {
+        throw $e;
+      }
+    }
     $medium_post->id = $created_medium_post->id;
+
+    // Don't derail the migration just because of a claims failure
+    try {
+      if ($medium_post->byline_email) {
+        // Create a claim for the post, if necessary.
+        self::create_post_claim($medium_post, $medium_user, $medium_post->byline_email);
+      }
+    } catch (Exception $e) {
+      error_log("ERROR: Claim call failed $e->getMessage(), $e->getCode()");
+    }
 
     return $created_medium_post;
   }
@@ -1001,6 +1012,7 @@ class Medium_Admin {
 
     $payload = array(
       "headers" => $headers,
+      "timeout" => 10,
       "user-agent" => "MonkeyMagic/1.0"
     );
     $url = self::$_medium_api_host . $path;
@@ -1030,19 +1042,25 @@ class Medium_Admin {
     $content_type = wp_remote_retrieve_header($response, "content-type");
     $body = wp_remote_retrieve_body($response);
 
+    error_log("Received response ($code - $content_type): $body");
     if (is_wp_error($response)) {
-      throw new Exception($response->get_error_message(), 500);
+      $message = $response->get_error_message();
+      $error_code = $response->get_error_code();
+      error_log("WP ERROR: $message ($error_code)");
+      if ($error_code == "http_request_failed" && strpos($message, "timed out") !== false) {
+        throw new Exception($message, -2); // our custom code for timeouts
+      }
+      throw new Exception($message, 500);
     }
 
     if (false === strpos($content_type, "json")) {
       throw new Exception(__("Unexpected response format.", "medium"), $code);
     }
 
-    error_log("Received payload: $body");
     $payload = json_decode($body);
     if (isset($payload->errors)) {
       $error = $payload->errors[0];
-      error_log("Received API error: $error->message ($error->code)");
+      error_log("API ERROR: $error->message ($error->code)");
       throw new Exception($error->message, $error->code);
     }
 
