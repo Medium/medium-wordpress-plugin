@@ -360,6 +360,7 @@ class Medium_Admin {
       FROM $table
       WHERE post_id != 0
       AND medium_post_id IS NULL
+      ORDER BY post_id ASC
       LIMIT 5
     ");
 
@@ -959,8 +960,8 @@ class Medium_Admin {
    * Given a post, returns content suitable for sending to Medium.
    */
   private static function _prepare_content($post) {
-    // Add paragraph tags.
-    $post_content = do_shortcode(wpautop($post->post_content));
+    // Add paragraph tags, remove extraneous newlines, and replace shortcodes.
+    $post_content = do_shortcode(preg_replace("/<br \/>\n/m", "<br />" , wpautop($post->post_content)));
 
     // Best effort. Regex parsing of HTML is a bad idea, generally, but including
     // a full parser just for this case is over the top. This will match things
