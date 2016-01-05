@@ -1,8 +1,8 @@
 ﻿=== Medium ===
-Contributors: mediumdotcom, majelbstoat
+Contributors: mediumdotcom, majelbstoat, huckphin
 Tags:  medium, medium auto publish, publish post to medium, medium publishing, post to medium, social media auto publish, social media publishing, social network auto publish, social media, social network
 Requires at least: 3.3
-Tested up to: 4.3
+Tested up to: 4.4
 Stable tag: trunk
 License: Apache
 
@@ -36,6 +36,11 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.2 =
+* Fixed: Shortcodes are now processed before sending to Medium.
+* Changed: Restructured remote API calling code.
+* New: Tool to migrate posts to Medium.
+
 = Medium 1.1.1 =
 * Fixed: Missing publication Id for publishing after upgrade.
 * Fixed: Make upgrading safer if WordPress sandboxing doesn't catch activation errors.
@@ -45,7 +50,7 @@ Any modifications you make to a post after you have sent the post to Medium will
 * New: Posts are sent to Medium with the same publish date as on WordPress.
 * New: Optionally prevent your Medium followers from being notified of the published post.
 * Fix: No longer show cross-links to Medium if you didn't want them. (Note to self: "no" is not falsey)
-* Change: Use WP's own remote request library to maximise compatibility with different server configurations.
+* Changed: Use WP's own remote request library to maximise compatibility with different server configurations.
 * i18n: German translation, contributed by https://github.com/lsinger
 
 = Medium 1.0 =
