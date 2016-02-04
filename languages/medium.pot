@@ -1,97 +1,101 @@
-# Copyright (C) 2015 Medium
+# Copyright (C) 2016 Medium
 # This file is distributed under the same license as the Medium package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Medium 1.1\n"
+"Project-Id-Version: Medium 1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/medium\n"
-"POT-Creation-Date: 2015-11-23 15:49:16+00:00\n"
+"POT-Creation-Date: 2016-02-04 19:33:24+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: lib/medium-admin.php:50
+#: lib/medium-admin.php:60
 msgid ""
 "An updated integration token is needed to perform this action. Please create "
 "a new integration token from your Medium settings page and set it on your "
 "WordPress profile above."
 msgstr ""
 
-#: lib/medium-admin.php:51
+#: lib/medium-admin.php:61
 msgid "An unknown error occurred (%s)."
 msgstr ""
 
-#: lib/medium-admin.php:458 lib/medium-admin.php:497
-msgid "None"
-msgstr ""
-
-#: lib/medium-admin.php:459
+#: lib/medium-admin.php:853
 msgid "Public"
 msgstr ""
 
-#: lib/medium-admin.php:460
+#: lib/medium-admin.php:854
 msgid "Draft"
 msgstr ""
 
-#: lib/medium-admin.php:461
+#: lib/medium-admin.php:855
 msgid "Unlisted"
 msgstr ""
 
-#: lib/medium-admin.php:470
+#: lib/medium-admin.php:859 lib/medium-admin.php:908
+msgid "None"
+msgstr ""
+
+#: lib/medium-admin.php:870
 msgid "All rights reserved"
 msgstr ""
 
-#: lib/medium-admin.php:471
+#: lib/medium-admin.php:871
 msgid "CC 4.0 BY"
 msgstr ""
 
-#: lib/medium-admin.php:472
+#: lib/medium-admin.php:872
 msgid "CC 4.0 BY-ND"
 msgstr ""
 
-#: lib/medium-admin.php:473
+#: lib/medium-admin.php:873
 msgid "CC 4.0 BY-SA"
 msgstr ""
 
-#: lib/medium-admin.php:474
+#: lib/medium-admin.php:874
 msgid "CC 4.0 BY-NC"
 msgstr ""
 
-#: lib/medium-admin.php:475
+#: lib/medium-admin.php:875
 msgid "CC 4.0 BY-NC-ND"
 msgstr ""
 
-#: lib/medium-admin.php:476
+#: lib/medium-admin.php:876
 msgid "CC 4.0 BY-NC-SA"
 msgstr ""
 
-#: lib/medium-admin.php:477
+#: lib/medium-admin.php:877
 msgid "CC Copyright waiver"
 msgstr ""
 
-#: lib/medium-admin.php:478
+#: lib/medium-admin.php:878
 msgid "Public domain"
 msgstr ""
 
-#: lib/medium-admin.php:487
+#: lib/medium-admin.php:887
 msgid "No"
 msgstr ""
 
-#: lib/medium-admin.php:488
+#: lib/medium-admin.php:888
 msgid "Yes"
 msgstr ""
 
-#: lib/medium-admin.php:503
+#: lib/medium-admin.php:914
 msgid "%s (Draft only)"
 msgstr ""
 
-#: lib/medium-admin.php:605
+#: lib/medium-admin.php:1031
+msgid "Invalid method specified."
+msgstr ""
+
+#: lib/medium-admin.php:1057
 msgid "Unexpected response format."
 msgstr ""
 
-#. #-#-#-#-#  medium.pot (Medium 1.1)  #-#-#-#-#
+#. #-#-#-#-#  medium.pot (Medium 1.2)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: views/content-cross-linked.phtml:5 views/form-user-profile.phtml:1
 msgid "Medium"
@@ -101,8 +105,119 @@ msgstr ""
 msgid "Also published on %s."
 msgstr ""
 
-#: views/content-rendered-post.phtml:11
+#: views/content-rendered-post.phtml:6
+msgid "by %s"
+msgstr ""
+
+#: views/content-rendered-post.phtml:18
 msgid "Originally published at %s."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:2
+msgid "Migrate to Medium"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:3
+msgid ""
+"Use this migration tool to cross-post all posts on this site to a Medium "
+"publication."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:4
+msgid ""
+"Migrated posts will not be distributed to users, and will use their original "
+"post date as the post date on Medium."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:5
+msgid "Migrated posts will not be cross-linked on either site."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:9
+msgid ""
+"You must be the editor of at least one Medium publication to use this "
+"feature."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:15
+msgid "Publication"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:27
+msgid "The publication on Medium to submit the migrated posts to."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:32
+msgid "Cross-post status"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:44
+msgid ""
+"The status to use for migrated posts. If an author is not an Editor of the "
+"publication, will fallback to Draft."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:49
+msgid "Cross-post license"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:61
+msgid "The license to use for migrated posts."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:66
+msgid "Fallback user account"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:78
+msgid ""
+"The account to use for posts by authors who have no integration token set."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:83
+msgid "Prepare"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:85
+msgid "Progress"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:88
+msgid "%s post(s) queued for migration."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:93
+msgid "%s post(s) from connected authors."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:98
+msgid "%s post(s) will use the fallback account."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:103
+msgid "%s post(s) will be created as public."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:108
+msgid "%s post(s) will be created as unlisted."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:113
+msgid "%s post(s) will be created as drafts."
+msgstr ""
+
+#: views/form-migrate-tool.phtml:119
+msgid "Migrate"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:120 views/form-post-box-actions.phtml:33
+#: views/form-post-box-actions.phtml:61 views/form-post-box-actions.phtml:89
+#: views/form-post-box-actions.phtml:117 views/form-post-box-actions.phtml:145
+msgid "Cancel"
+msgstr ""
+
+#: views/form-migrate-tool.phtml:122
+msgid "Reset"
 msgstr ""
 
 #: views/form-post-box-actions-disabled.phtml:4
@@ -131,12 +246,6 @@ msgstr ""
 #: views/form-post-box-actions.phtml:88 views/form-post-box-actions.phtml:116
 #: views/form-post-box-actions.phtml:144
 msgid "OK"
-msgstr ""
-
-#: views/form-post-box-actions.phtml:33 views/form-post-box-actions.phtml:61
-#: views/form-post-box-actions.phtml:89 views/form-post-box-actions.phtml:117
-#: views/form-post-box-actions.phtml:145
-msgid "Cancel"
 msgstr ""
 
 #: views/form-post-box-actions.phtml:42
@@ -213,7 +322,7 @@ msgstr ""
 #: views/form-user-profile.phtml:52
 msgid ""
 "The default license to use when creating a post on Medium. Does not display "
-"any license. information locally. Can be changed for each post."
+"any license information locally. Can be changed for each post."
 msgstr ""
 
 #: views/form-user-profile.phtml:57
@@ -239,6 +348,10 @@ msgstr ""
 
 #: views/form-user-profile.phtml:91
 msgid "Default cross-post publication"
+msgstr ""
+
+#: views/form-user-profile.phtml:105
+msgid "Refresh Publications"
 msgstr ""
 
 #: views/form-user-profile.phtml:110
