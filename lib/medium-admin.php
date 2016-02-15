@@ -1012,7 +1012,7 @@ class Medium_Admin {
 
     $payload = array(
       "headers" => $headers,
-      "timeout" => 20,
+      "timeout" => 40,
       "user-agent" => "MonkeyMagic/1.0"
     );
     $url = self::$_medium_api_host . $path;
