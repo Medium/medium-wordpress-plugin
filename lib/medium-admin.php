@@ -751,7 +751,7 @@ class Medium_Admin {
 
     $permalink = get_permalink($post->ID);
     $content = Medium_View::render("content-rendered-post", array(
-      "title" => $post->post_title,
+      "title" => strip_tags($post->post_title),
       "content" => self::_prepare_content($post),
       "cross_link" => $medium_post->cross_link == "yes",
       "site_name" => get_bloginfo('name'),
@@ -760,7 +760,7 @@ class Medium_Admin {
     ), true);
 
     $body = array(
-      "title" => $post->post_title,
+      "title" => strip_tags($post->post_title),
       "content" => $content,
       "tags" => $tags,
       "contentFormat" => "html",
