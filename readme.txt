@@ -36,6 +36,10 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.2.1 =
+* Fixed: Increase Medium request timeout
+* Fixed: Strip HTML tags from post titles when cross-posting
+
 = Medium 1.2 =
 * Fixed: Shortcodes are now processed before sending to Medium.
 * Changed: Restructured remote API calling code.
