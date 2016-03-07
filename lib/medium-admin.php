@@ -1054,7 +1054,7 @@ class Medium_Admin {
     }
 
     if (false === strpos($content_type, "json")) {
-      throw new Exception(__("Unexpected response format.", "medium"), $code);
+      throw new Exception(sprintf(__("Unexpected response format: %s - %s", "medium"), $content_type, $body), $code);
     }
 
     $payload = json_decode($body);
