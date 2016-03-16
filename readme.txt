@@ -36,6 +36,10 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.2.2 =
+* Fixed: Cross posting in timezones ahead of GMT
+* Changed: More details in exception message
+
 = Medium 1.2.1 =
 * Fixed: Increase Medium request timeout
 * Fixed: Strip HTML tags from post titles when cross-posting
