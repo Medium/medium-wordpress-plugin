@@ -767,7 +767,7 @@ class Medium_Admin {
       "canonicalUrl" => $permalink,
       "license" => $medium_post->license,
       "publishStatus" => $medium_post->status,
-      "publishedAt" => mysql2date('c', $post->post_date_gmt),
+      "publishedAt" => mysql2date('c', isset($post->post_date_gmt) ? $post->post_date_gmt : $post->post_date),
       "notifyFollowers" => $medium_post->follower_notification == "yes"
     );
     $data = json_encode($body);
