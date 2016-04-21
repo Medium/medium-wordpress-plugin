@@ -959,8 +959,11 @@ class Medium_Admin {
    * Given a post, returns content suitable for sending to Medium.
    */
   private static function _prepare_content($post) {
-    // Add paragraph tags.
-    $post_content = do_shortcode(wpautop($post->post_content));
+    if (function_exists('has_post_thumbnail') && has_post_thumbnail($post)) {
+      $post_content = sprintf('<img src="%s" /><br />%s', get_the_post_thumbnail_url($post), do_shortcode(wpautop($post->post_content)));
+    } else {
+      $post_content = do_shortcode(wpautop($post->post_content));
+    }
 
     // Best effort. Regex parsing of HTML is a bad idea, generally, but including
     // a full parser just for this case is over the top. This will match things
