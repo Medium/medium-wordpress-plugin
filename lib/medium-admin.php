@@ -606,6 +606,15 @@ class Medium_Admin {
       $contributors = self::get_publication_contributors($integration_token, $publication->id);
       foreach ($contributors as $contributor) {
         if ($contributor->userId == $medium_user_id) {
+          // Override role if the role is editor to promote role
+          // Fixes "Draft Only" issue when user is both an editor and a writer
+          if (array_key_exists($publication->id, $contributing_publications)) {
+            if ($contributor->role == "editor") {
+              $contributing_publications[$publication->id]->role = "editor";
+            } else {
+              continue;
+            }
+          }
           $contributing_publication = new Medium_Publication();
           $contributing_publication->id = $publication->id;
           $contributing_publication->image_url = $publication->imageUrl;
