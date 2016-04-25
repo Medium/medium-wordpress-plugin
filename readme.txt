@@ -36,6 +36,11 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.3 =
+* New: Featured images
+* Changed: When added fallback to post date when GMT time not set.
+* Changed: Added editor privileges to users that are both writer/editor of publication.
+
 = Medium 1.2.2 =
 * Fixed: Cross posting in timezones ahead of GMT
 * Changed: More details in exception message
