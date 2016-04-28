@@ -735,6 +735,10 @@ class Medium_Admin {
    */
   public static function cross_post($post, $medium_post, $medium_user) {
     $tag_data = wp_get_post_terms($post->ID, array("post_tag", "slug"));
+    // Use wp_get_post_tags() if WP_Error returned
+    if (is_wp_error($tag_data)) {
+      $tag_data = wp_get_post_tags($post->ID);
+    }
     $tags = array();
     $slugs = array();
     foreach ($tag_data as $tag) {
