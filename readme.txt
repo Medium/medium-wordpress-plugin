@@ -36,6 +36,10 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.3.1 =
+* Fixed: Tag retrieval
+* Fixed: Cases that resulted in duplicate images.
+
 = Medium 1.3 =
 * New: Featured images
 * Changed: Added fallback to post date when GMT time not set.

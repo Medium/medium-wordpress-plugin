@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Medium
- * @version 1.3.0
+ * @version 1.3.1
  */
 /*
 Plugin Name: Medium
@@ -20,7 +20,7 @@ if (!function_exists("add_action")) {
   exit;
 }
 
-define("MEDIUM_VERSION", "1.3.0");
+define("MEDIUM_VERSION", "1.3.1");
 define("MEDIUM_PLUGIN_DIR", plugin_dir_path(__FILE__));
 define("MEDIUM_PLUGIN_URL", plugin_dir_url(__FILE__));
 
