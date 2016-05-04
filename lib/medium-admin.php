@@ -796,16 +796,28 @@ class Medium_Admin {
         "Content-Type" => "application/json"
       ));
     } catch (Exception $e) {
-      // Retry once if we got a timeout
+      // Retry on the server failure response codes
+      $retry_response_codes = array(
+        500,
+        502,
+        503,
+        504
+      );
+
+      // Retry once for timeout or server error
       if ($e->getCode() == -2) {
         error_log("RETRYING POST $post->ID '$post->post_title' due to timeout, delaying...");
         sleep(5);
-        $created_medium_post = self::_medium_request("POST", $path, $medium_user->token, $data, array(
-          "Content-Type" => "application/json"
-        ));
+      } else if (in_array($e->getCode(), $retry_response_codes)) {
+        error_log("RETRYING POST $post->ID '$post->post_title' due to response code $code, delaying...");
+        sleep(5);
       } else {
         throw $e;
       }
+
+      $created_medium_post = self::_medium_request("POST", $path, $medium_user->token, $data, array(
+          "Content-Type" => "application/json"
+      ));
     }
     $medium_post->id = $created_medium_post->id;
 
@@ -1071,7 +1083,7 @@ class Medium_Admin {
       if ($error_code == "http_request_failed" && strpos($message, "timed out") !== false) {
         throw new Exception($message, -2); // our custom code for timeouts
       }
-      throw new Exception($message, 500);
+      throw new Exception($message, $code);
     }
 
     if (false === strpos($content_type, "json")) {
