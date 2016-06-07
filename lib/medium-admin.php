@@ -986,7 +986,7 @@ class Medium_Admin {
   private static function _prepare_content($post) {
     if (function_exists('has_post_thumbnail') && has_post_thumbnail($post)) {
       // If $post->post_content starts with an <img> tag, do not use the featured image
-      if (strpos($post->post_content, "<img") != 0) {
+      if (strpos($post->post_content, "<img") !== 0) {
         $post_content = sprintf('<img src="%s" /><br />%s', get_the_post_thumbnail_url($post), do_shortcode(wpautop($post->post_content)));
       } else {
         $post_content = do_shortcode(wpautop($post->post_content));
