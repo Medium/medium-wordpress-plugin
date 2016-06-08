@@ -984,6 +984,22 @@ class Medium_Admin {
    * Given a post, returns content suitable for sending to Medium.
    */
   private static function _prepare_content($post) {
+    // If Valenti theme is installed, check for audio or video featured image embeds.
+    // Prepend the embed to the post_content when preparing the content.
+    // See: http://themeforest.net/item/valenti-wordpress-hd-review-magazine-news-theme/5888961
+    if (function_exists('cb_featured_image')) {
+      $iframe_url = NULL;
+      if (get_post_format($post->post_id) == 'video') {
+        $iframe_url = get_post_meta($post->ID, 'cb_video_embed_code_post', true);
+      }
+      if (get_post_format($post->post_id) == 'audio') {
+        $iframe_url = get_post_meta($post->ID, 'cb_soundcloud_embed_code_post', true);
+      }
+      if (isset($iframe_url)) {
+        $post->post_content = sprintf('%s<br />%s', $iframe_url, $post->post_content);
+      }
+    }
+
     if (function_exists('has_post_thumbnail') && has_post_thumbnail($post)) {
       // If $post->post_content starts with an <img> tag, do not use the featured image
       if (strpos($post->post_content, "<img") !== 0) {
