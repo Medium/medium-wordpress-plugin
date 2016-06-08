@@ -36,6 +36,12 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
+= Medium 1.3.2 =
+* New: Added support for featured image embeds from Valenti themes
+* Changed: Retry post creation on server response code failure
+* Changed: Get full image for featured images
+* Fixed: Bug when checking if posts starts with <img>
+
 = Medium 1.3.1 =
 * Fixed: Tag retrieval
 * Fixed: Cases that resulted in duplicate images.
