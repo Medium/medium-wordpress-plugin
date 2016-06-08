@@ -36,7 +36,7 @@ Any modifications you make to a post after you have sent the post to Medium will
 
 == Changelog ==
 
-= Medium 1.3.2 =
+= Medium 1.4.0 =
 * New: Added support for featured image embeds from Valenti themes
 * Changed: Retry post creation on server response code failure
 * Changed: Get full image for featured images
