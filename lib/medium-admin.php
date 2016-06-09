@@ -8,6 +8,8 @@ include_once(MEDIUM_PLUGIN_DIR . "lib/medium-user.php");
 include_once(MEDIUM_PLUGIN_DIR . "lib/medium-view.php");
 
 define("NO_PUBLICATION", -1);
+define("API_TIMEOUT", -2);
+define("API_EXCEEDED_CAPACITY", -3);
 
 class Medium_Admin {
 
@@ -805,11 +807,14 @@ class Medium_Admin {
       );
 
       // Retry once for timeout or server error
-      if ($e->getCode() == -2) {
+      if ($e->getCode() == API_TIMEOUT) {
         error_log("RETRYING POST $post->ID '$post->post_title' due to timeout, delaying...");
         sleep(5);
       } else if (in_array($e->getCode(), $retry_response_codes)) {
         error_log("RETRYING POST $post->ID '$post->post_title' due to response code $code, delaying...");
+        sleep(5);
+      } else if ($e->getCode() == API_EXCEEDED_CAPACITY) {
+        error_log("RETRYING POST $post->ID '$post->post_title' due to table capacity, delaying...");
         sleep(5);
       } else {
         throw $e;
@@ -1097,7 +1102,10 @@ class Medium_Admin {
       $error_code = $response->get_error_code();
       error_log("WP ERROR: $message ($error_code)");
       if ($error_code == "http_request_failed" && strpos($message, "timed out") !== false) {
-        throw new Exception($message, -2); // our custom code for timeouts
+        throw new Exception($message, API_TIMEOUT);
+      }
+      if ($error_code == "http_request_failed" && strpos($message, "provisioned throughput for the table was exceeded") !== false) {
+        throw new Exception($message, API_EXCEEDED_CAPACITY);
       }
       throw new Exception($message, $code);
     }
