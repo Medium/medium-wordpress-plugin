@@ -754,6 +754,14 @@ class Medium_Admin {
     }
     $tags = array_values(array_unique(array_merge($slugs, $tags)));
 
+    // pull in categories as tags
+    $categories = wp_get_the_category($post->ID);
+    $cats = array();
+    foreach($categories as $category){
+        $cats[] = $category->name;
+    }
+    $tags = array_values(array_unique(array_merge($cats, $tags)));
+
     if (class_exists('CoAuthors_Guest_Authors')) {
       // Handle guest-authors if the CoAuthors Plus plugin is installed.
       $coauthors = get_coauthors($post->ID);
