@@ -764,6 +764,12 @@ class Medium_Admin {
       }
     }
 
+    // API does not cross post when missing a title. Set as "untitled"
+    // if the post is missing a post title.
+    if (!isset($post->post_title) || strlen($post->post_title) === 0) {
+      $post->post_title = "untitled";
+    }
+
     $permalink = get_permalink($post->ID);
     $content = Medium_View::render("content-rendered-post", array(
       "title" => strip_tags($post->post_title),
