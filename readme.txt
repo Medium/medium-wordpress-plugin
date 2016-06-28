@@ -1,5 +1,5 @@
 ﻿=== Medium ===
-Contributors: mediumdotcom, majelbstoat, huckphin
+Contributors: mediumdotcom, majelbstoat, huckphin, amyquispe
 Tags:  medium, medium auto publish, publish post to medium, medium publishing, post to medium, social media auto publish, social media publishing, social network auto publish, social media, social network
 Requires at least: 3.3
 Tested up to: 4.5.3
