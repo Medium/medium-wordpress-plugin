@@ -636,6 +636,15 @@ class Medium_Admin {
    */
   private static function _get_user_integration_data() {
     global $wpdb;
+    $usermeta_query = "SELECT user_id, meta_value AS medium_user FROM $wpdb->usermatea AS um WHERE um.meta_key = 'medium_user'";
+
+    $user_meta = $wpdb->get_results($usermeta_query);
+    $user_ids = array();
+    foreach($user_meta as $user) {
+      $user_ids_array[] = $user->user_id;
+    }
+    $ids = join(',', $user_ids);
+
     $user_integrations = $wpdb->get_results("
       SELECT u.ID as user_id, u.display_name AS name, um.medium_user
       FROM $wpdb->users AS u
@@ -644,6 +653,7 @@ class Medium_Admin {
         WHERE um.meta_key = 'medium_user'
       ) AS um
       ON u.ID = um.user_id
+      WHERE u.ID in ($ids)
     ");
 
     $unlinked_accounts = array();
