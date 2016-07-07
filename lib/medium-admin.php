@@ -788,12 +788,18 @@ class Medium_Admin {
       $post->post_title = "untitled";
     }
 
+    $blog_name = get_bloginfo('name');
+    if (empty($blog_name)) {
+      $site_url = site_url();
+      $blog_name = str_replace(parse_url($site_url, PHP_URL_SCHEME) . '://', '', $site_url);
+    }
+
     $permalink = get_permalink($post->ID);
     $content = Medium_View::render("content-rendered-post", array(
       "title" => strip_tags($post->post_title),
       "content" => self::_prepare_content($post),
       "cross_link" => $medium_post->cross_link == "yes",
-      "site_name" => get_bloginfo('name'),
+      "site_name" => $blog_name,
       "permalink" => $permalink,
       "byline" => $medium_post->byline_name
     ), true);
