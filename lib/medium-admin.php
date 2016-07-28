@@ -815,6 +815,14 @@ class Medium_Admin {
       "publishedAt" => mysql2date('c', isset($post->post_date_gmt) ? $post->post_date_gmt : $post->post_date),
       "notifyFollowers" => $medium_post->follower_notification == "yes"
     );
+    // cannot compare wordpress time to medium time
+    // if the $post_date is within 15 minutes, do not
+    // use 'publishedAt', just use the server time
+    // fixes https://github.com/Medium/medium-wordpress-plugin/issues/106
+    $post_date_ts = mysql2date('U', isset($post->post_date_gmt) ? $post->post_date_gmt : $post->post_date);
+    if (abs(mktime() - mysql2date('U')) < 900) {
+      unset($body["publishedAt"]);
+    }
     $data = json_encode($body);
 
     if ($medium_post->publication_id != NO_PUBLICATION) {
