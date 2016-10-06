@@ -24,7 +24,8 @@ define("MEDIUM_VERSION", "1.4.0");
 define("MEDIUM_PLUGIN_DIR", plugin_dir_path(__FILE__));
 define("MEDIUM_PLUGIN_URL", plugin_dir_url(__FILE__));
 
-if (is_admin()) {
+if (is_admin() or
+        (defined ('DOING_CRON') and DOING_CRON)) {
   require_once(MEDIUM_PLUGIN_DIR . "lib/medium-admin.php");
   add_action("init", array("Medium_Admin", "init"));
 } else {
