@@ -44,6 +44,7 @@ class Medium_Admin {
     add_action("add_meta_boxes_post", array("Medium_Admin", "add_meta_boxes_post"));
 
     add_action("save_post", array("Medium_Admin", "save_post"), 10, 2);
+    add_action("publish_post", array("Medium_Admin", "save_post"), 10, 2);
   }
 
   // Actions and hooks.
