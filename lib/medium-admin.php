@@ -46,6 +46,7 @@ class Medium_Admin {
     add_action("add_meta_boxes_post", array("Medium_Admin", "add_meta_boxes_post"));
 
     add_action("save_post", array("Medium_Admin", "save_post"), 10, 2);
+    add_action("publish_post", array("Medium_Admin", "save_post"), 10, 2);
   }
 
   // Actions and hooks.
@@ -765,12 +766,9 @@ class Medium_Admin {
     $tags = array_values(array_unique(array_merge($slugs, $tags)));
 
     // pull in categories as tags
-    $categories = wp_get_the_category($post->ID);
-    $cats = array();
-    foreach($categories as $category){
-        $cats[] = $category->name;
-    }
-    $tags = array_values(array_unique(array_merge($cats, $tags)));
+    $args = array('fields' => 'names'); // @see wp_get_post_categories() $args ref to wp_get_object_terms()
+    $categories_name = wp_get_post_categories($post->ID, $args);
+    $tags = array_values(array_unique(array_merge($categories_name, $tags)));
 
     if (class_exists('CoAuthors_Guest_Authors')) {
       // Handle guest-authors if the CoAuthors Plus plugin is installed.
