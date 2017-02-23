@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-02-23 11:21-0300\n"
+"PO-Revision-Date: 2017-02-23 12:17-0300\n"
 "Language-Team: Z.BRA Estúdio <contato@zbraestudio.com.br>\n"
 "X-Generator: Poedit 1.8.12\n"
 "Last-Translator: \n"
@@ -241,7 +241,7 @@ msgstr ""
 
 #: views/form-post-box-actions.phtml:9
 msgid "Cross-post as: %s"
-msgstr ""
+msgstr "Publicar como: %s"
 
 #: views/form-post-box-actions.phtml:11 views/form-post-box-actions.phtml:44
 #: views/form-post-box-actions.phtml:72 views/form-post-box-actions.phtml:100
@@ -269,7 +269,7 @@ msgstr "Editar licença Medium"
 
 #: views/form-post-box-actions.phtml:70
 msgid "Cross-link posts: %s"
-msgstr ""
+msgstr "Cruzar links da publicação: %s"
 
 #: views/form-post-box-actions.phtml:73
 msgid "Edit cross-link status"
@@ -305,7 +305,7 @@ msgstr "Token de Interação:"
 
 #: views/form-user-profile.phtml:11
 msgid "Connected to Medium as %s."
-msgstr ""
+msgstr "Conectando ao Medium como %s."
 
 #: views/form-user-profile.phtml:14
 msgid "your Medium Settings"
@@ -317,7 +317,7 @@ msgstr ""
 
 #: views/form-user-profile.phtml:23
 msgid "Default cross-post status"
-msgstr ""
+msgstr "Status da publicação (padrão)"
 
 #: views/form-user-profile.phtml:35
 msgid ""
@@ -325,20 +325,26 @@ msgid ""
 "will not be indexed, nor distributed through Medium. Can be changed for each "
 "post."
 msgstr ""
+"Ao publicar (automaticamente) a sua publicação no Medium, o status padrão "
+"será de acordo com o que você especificar acima. Pode ser alterado para cada "
+"postagem."
 
 #: views/form-user-profile.phtml:40
 msgid "Default cross-post license"
-msgstr ""
+msgstr "Licença da publicação (padrão)"
 
 #: views/form-user-profile.phtml:52
 msgid ""
 "The default license to use when creating a post on Medium. Does not display "
 "any license information locally. Can be changed for each post."
 msgstr ""
+"Ao publicar (automaticamente) a sua publicação no Medium, a licença padrão "
+"será de acordo com o que você especificar acima. Pode ser alterado para cada "
+"postagem."
 
 #: views/form-user-profile.phtml:57
 msgid "Default cross-link status"
-msgstr ""
+msgstr "Cruzar link nas publicações (padrão)"
 
 #: views/form-user-profile.phtml:69
 msgid ""
@@ -346,20 +352,25 @@ msgid ""
 "enabled adds a link to the bottom of both your local post, and the Medium "
 "post. Can be changed for each post."
 msgstr ""
+"Ao publicar (automaticamente) a sua publicação no Medium, será adicionar um "
+"link no final da publicação (no Medium) referenciando o link do seu blog. "
+"Pode ser alterado para cada postagem."
 
 #: views/form-user-profile.phtml:74
 msgid "Default follower notification"
-msgstr ""
+msgstr "Notificar seguidores (padrão)"
 
 #: views/form-user-profile.phtml:86
 msgid ""
 "Whether or not to notify your Medium followers when the post is sent to "
 "Medium. Can be changed for each post."
 msgstr ""
+"Ao publicar (automaticamente) a sua publicação no Medium, seus seguidores "
+"serão (ou não) notificados. Pode ser alterado para cada postagem."
 
 #: views/form-user-profile.phtml:91
 msgid "Default cross-post publication"
-msgstr ""
+msgstr "Publicar post no Medium (padrão)"
 
 #: views/form-user-profile.phtml:105
 msgid "Refresh Publications"
@@ -370,18 +381,20 @@ msgid ""
 "The publication on Medium to submit the post to. Can be changed for each "
 "post."
 msgstr ""
+"Ao salvar um novo post, seu texto será publicado (ou não) automaticamente no "
+"Medium. Pode ser alterado para cada postagem."
 
 #: views/notice-api-disabled.phtml:2
 msgid "The Medium API is temporarily disabled."
-msgstr ""
+msgstr "A API do Medium está temporariamente desativada."
 
 #: views/notice-connected.phtml:5
 msgid "Successfully connected to Medium as %s."
-msgstr ""
+msgstr "Você foi conectado com sucesso ao Medium como %s."
 
 #: views/notice-invalid-token.phtml:5
 msgid "%s is not a valid Medium Integration token."
-msgstr ""
+msgstr "%s não é um token válido do Medium"
 
 #: views/notice-missing-scope.phtml:5
 msgid ""
@@ -396,7 +409,7 @@ msgstr "Ver publicação"
 #. translators: 1: post status, 2: link to view post.
 #: views/notice-published.phtml:6
 msgid "%1$s post successfully created on Medium. %2$s."
-msgstr ""
+msgstr "Foi criado uma publicação no Medium com status: %1$s. %2$s."
 
 #. translators: 1: error notice, 2: message, 3: code.
 #: views/notice-something-wrong.phtml:5
