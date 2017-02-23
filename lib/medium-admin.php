@@ -55,7 +55,6 @@ class Medium_Admin {
    */
   public static function admin_init() {
     global $wpdb;
-    load_plugin_textdomain("medium");
 
     wp_register_script("medium_admin_js", MEDIUM_PLUGIN_URL . "js/admin.js");
     wp_localize_script("medium_admin_js", "medium", array(

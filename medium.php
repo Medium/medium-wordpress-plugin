@@ -31,3 +31,10 @@ if (is_admin()) {
   require_once(MEDIUM_PLUGIN_DIR . "lib/medium-site.php");
   add_action("init", array("Medium_Site", "init"));
 }
+
+/* Load translations (textdomain) */
+add_action( 'init', 'medium_load_textdomain' );
+
+function medium_load_textdomain() {
+  load_plugin_textdomain( 'medium', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
