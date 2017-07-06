@@ -10,7 +10,8 @@ if ($data->byline) {
 echo $data->content;
 if ($data->cross_link) {
 	?>
-	<hr>
+	<hr class="medium-cross-link-hr">
+	<div class="medium-cross-link">
 	<p>
 		<em>
 			<?php
@@ -19,5 +20,6 @@ if ($data->cross_link) {
 		  ?>
 		</em>
 	</p>
+	</div>
 	<?php
 }
