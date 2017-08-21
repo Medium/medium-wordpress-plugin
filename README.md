@@ -30,6 +30,7 @@ Contributors
 
 [Frankie Jarrett](https://github.com/fjarrett)
 [Dusty Matthews](https://github.com/dustym)
+[Tihh Gonçalves](https://github.com/tihhgoncalves)
 
 License
 -------
