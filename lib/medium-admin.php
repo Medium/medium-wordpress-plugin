@@ -182,7 +182,7 @@ class Medium_Admin {
         $user = self::get_medium_user_info($token);
 
         // Refresh the set of publications the user can contribute to.
-        $medium_user->publications = self::get_contributing_publications($token, $user->id);
+        // $medium_user->publications = self::get_contributing_publications($token, $user->id);
 
         $medium_user->id = $user->id;
         $medium_user->image_url = $user->imageUrl;
